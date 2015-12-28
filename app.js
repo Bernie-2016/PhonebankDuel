@@ -19,7 +19,7 @@ var uristring =
 //Mongoose
 // getting-started.js
 var mongoose = require('mongoose');
-mongoose.(uristring, function (err, res) {
+mongoose.connect(uristring, function (err, res) {
   if (err) {
     console.log ('ERROR connecting to: ' + uristring + '. ' + err);
   } else {
@@ -175,5 +175,3 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(theport);
-
-module.exports = app;
