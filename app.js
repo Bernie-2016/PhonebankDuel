@@ -175,3 +175,5 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(theport);
+
+module.exports = app;
