@@ -8,10 +8,25 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+//
+var uristring =
+  process.env.MONGOLAB_URI ||
+  process.env.MONGOHQ_URL ||
+  'mongodb://localhost/HelloMongoose';
+
+  var theport = process.env.PORT || 5000;
+
 //Mongoose
 // getting-started.js
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/phonebankduel');
+mongoose.(uristring, function (err, res) {
+  if (err) {
+    console.log ('ERROR connecting to: ' + uristring + '. ' + err);
+  } else {
+    console.log ('Succeeded connected to: ' + uristring);
+  }
+});
+
 mongoose.set('debug', true);
 
 //User model
@@ -159,6 +174,6 @@ app.use(function(err, req, res, next) {
   });
 });
 
-app.listen(3000);
+app.listen(theport);
 
 module.exports = app;
