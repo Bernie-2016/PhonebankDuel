@@ -1,0 +1,83 @@
+extends layout/hero-two-col
+
+block profile
+  div.profile-area.clearfix
+    div.profile-img
+      img(src='/images/profile.jpg')
+    div.profile-name-status
+      h1 Team #{team.name} (#{team.members.length} Members)
+      h3 Mentor:&nbsp;
+        a(href= "/user/" + team.mentor.username)= team.mentor.username
+      div.call-counters.clearfix
+        div.call-count
+          .hero= team.abbrev.calls_made
+          div Calls Made
+          //- div since Jul 2015
+        div#monthly-chart.call-chart
+
+block information
+
+  //team ranking
+  div.info-ranking.clearfix
+    h4 Rankings
+    div.personal-ranking
+      a(href='/rank/team')
+        span.label This Week
+      span.rank!= team.weekly_ranking
+    div.overall-ranking
+      a(href='/rank/team')
+        span.label Overall
+      span.rank!= team.overall_ranking
+
+  //team calls for the last 30 days
+  div.last-30-days
+    h4 This Week
+    div.weekly-calls.clearfix
+      h5
+        div.hero 100
+        div Calls Made
+      div#weekly-calls
+
+  //list of all members
+  div.member-list-area
+    h4 Members (#{team.members.length})
+      ul.member-list
+        each mem in team.members
+          li.member-item
+            a.member(href="/user/" + mem.username)
+              img(src= mem.photo)
+
+
+  div.call-to-action
+    a.cta.blue-button(href="#", style='line-height: 1.5') Pledge to Sponsor <br/>Team #{team.name}
+
+block activities
+  ul.activity-list
+    each activity in activities
+
+      li.activity-item
+        div.action-area.clearfix
+          div.img-area(style="background-image: url(/images/profile.jpg)")
+            a.fill-space
+          div.act
+            p.act-text
+              a.act-actor(href='#')= activity.source.label
+              span.act-action= activity.action
+              a.act-recipient(href='#')= activity.target.label
+              span.act-time-ago= activity.time_ago
+            p.act-brand
+              each user in activity.users_involved
+                  a(href='/user/' + user.username)
+                    img(src= user.photo, style='width: 30px; height: 30px;')
+
+block more
+  div.badges
+    ul.badges-list
+      - for(var i = 0; i < 2; i ++) {
+
+        li.badge-item.clearfix
+          div.badge-img(style="background-image: url(/images/profile.jpg)")
+          div.badge-label
+            h4 Bernie Sanders Award for Best Caller
+            span.date-received Dec 1 2015
+      - }

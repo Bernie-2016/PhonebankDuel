@@ -1,0 +1,77 @@
+body#hero-layout {
+  .content {
+    section#hero {
+      @include calc(height, "100% - 120px");
+      overflow: hidden;
+      position: relative;
+
+      & > img.background-image {
+        width: 110%;
+        opacity: 1;
+        margin-top: 25%;
+        margin-left: 50%;
+
+        @include compat(filter, "blur(3px)");
+        @include compat(transform, "translate(-50%, -50%)");
+
+        &.no-margin-top {
+
+          margin-top: 0;
+          @include compat(transform, "translate(-50%, 0%)");
+        }
+
+      }
+
+      // Start of Form
+      div.form-area {
+        position: absolute;
+
+        width: 370px;
+        padding: 20px 30px 20px 20px;
+
+        left: 50%;
+        top: 20%;
+
+        background-color: rgba(255,255,255,0.7);
+        @include compat(border-radius, 4px);
+        @include compat(transform, "translate(-50%,0)");
+        @include compat(box-shadow, "0 1px 0 rgba(0,0,0,0.3)");
+
+        h2 {
+          margin-bottom: 5px;
+          span.action { font-weight: 600; }
+          a { font-weight: 300; }
+        }
+
+        table {
+          width: 100%;
+          tr td {
+            padding: 4px 0;
+            &:first-child {
+              width: 20%;
+            }
+            &:last-child {
+              width: 80%;
+              input {
+                width: 100%; padding: 5px;
+                border: solid 1px lightgray;
+                font-size: 18px;
+              }
+            }
+            label {
+              text-align: right;
+              margin-right: 5px;
+              @include calc(width, "100% - 5px");
+            }
+          }
+        }
+      }
+      // End of Form
+
+    }
+
+    footer {
+      margin-top: 0;
+    }
+  }
+}

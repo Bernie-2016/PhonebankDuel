@@ -1,0 +1,33 @@
+extends ../layout/hero
+
+block hero_content
+  img.background-image.no-margin-top(src='/images/registration.jpg')
+  div.form-area
+    h2.spiel
+      span.action Register
+      span &nbsp;or&nbsp;
+      a(href='/user/login') Login
+
+    form.form-proper(method="POST",action='/user/register')
+      table
+        tr.name-area
+          td
+            label Username
+          td
+            input(type='text', name='user[username]')
+        tr.email-area
+          td
+            label Email
+          td
+            input(type='email', name='user[email]')
+        tr.password-area
+          td
+            label Password
+          td
+            input(type='password', name='user[password]')
+        tr
+          td &nbsp;
+          td
+            button.blue-button Register
+
+

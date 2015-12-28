@@ -1,0 +1,100 @@
+extends ../layout/two-col
+
+block left_content
+  div.flag-container
+    div.flag.ribbon.ribbon-right Weekly Team Ranking
+  div#team-weekly-chart.stats-chart.clearfix
+    div.weekly-participants.participants
+      ul
+        - for( var i = 0; i < weeklyRanking.length; i ++) {
+          - var rank = weeklyRanking[i];
+          - if ( !rank.count )  continue;
+
+            li.rank-item
+              div.rank= i+1
+              div.photo(style= "background-image: url(" + rank._id.team.logo + ")")
+              div.name
+                h5
+                  a(href= "/team/" + rank._id.team.name)= rank._id.team.name
+                h3= rank.count
+        - };
+    div#weekly-chart.actual-chart
+
+block right_content
+  div.flag-container
+    div.flag.ribbon.ribbon-right Overall Team Ranking
+  div#team-overall-chart.stats-chart
+    div.overall-participants.participants
+      ul
+        - for( var i = 0; i < overallRanking.length; i ++) {
+          - var rank = overallRanking[i];
+          - if ( !rank.count )  continue;
+            li.rank-item
+              div.rank= i+1
+              div.photo(style= "background-image: url(" + rank._id.team.logo + ")")
+              div.name
+                h5
+                  a(href= "/team/" + rank._id.team.name)= rank._id.team.name
+                h3= rank.count
+        - };
+
+
+    div#overall-chart.actual-chart
+
+block script_content
+  script(type='text/javascript').
+    window.overallData= !{JSON.stringify(overallRanking)};
+    window.weeklyData= !{JSON.stringify(weeklyRanking)};
+
+  script(type='text/javascript').
+    window.pageFactory = (function(){
+      //Generate bar chart for weekly
+      c3.generate({
+        bindto: "#weekly-chart",
+        data: {
+          columns: [
+            ['Calls Made'].concat(window.weeklyData.map(function(item){ return item.count; }))
+          ],
+          type: 'bar'
+        },
+        axis: {
+          rotated: true,
+          x: {
+            type: 'category',
+            categories: window.weeklyData.map(function(item){ return item._id.team.name; }),
+            show: false
+          },
+          y: {
+            show: false
+          }
+        },
+        legend: {
+          show: false
+        }
+      });
+
+      // GEnerate bar for overall
+      c3.generate({
+        bindto: "#overall-chart",
+        data: {
+          columns: [
+            ['Calls Made'].concat(window.overallData.map(function(item){ return item.count; }))
+          ],
+          type: 'bar'
+        },
+        axis: {
+          rotated: true,
+          x: {
+            type: 'category',
+            categories: window.overallData.map(function(item){ return item._id.team.name; }),
+            show: false
+          },
+          y: {
+            show: false
+          }
+        },
+        legend: {
+          show: false
+        }
+      });
+    })();

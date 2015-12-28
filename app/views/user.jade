@@ -1,0 +1,70 @@
+extends layout/hero-two-col
+
+block profile
+  div.profile-area.clearfix
+    div.profile-img
+      img(src= user.photo)
+    div.profile-name-status
+      h1 #{user.username}
+      h3
+        span Team&nbsp;
+        a(href='/team/' + user.team.name)= user.team.name
+      div.call-counters.clearfix
+        div.call-count
+          .hero= user.abbrev.calls_made
+          div Calls Made
+          //- div since Jul 2015
+        div#monthly-chart.call-chart
+
+block information
+
+  div.info-ranking.clearfix
+    h4 My Ranking
+    div.personal-ranking
+      a(href='/rank/caller')
+        span.label This Week
+      span.rank!= user.weekly_ranking
+    div.overall-ranking
+      a(href='/rank/caller')
+        span.label Overall
+      span.rank!= user.overall_ranking
+
+  div.last-30-days
+    h4 This Week
+    div.weekly-calls.clearfix
+      h5
+        div.hero= user.abbrev.calls_this_week
+        div Calls Made
+      div#weekly-calls
+
+  div.call-to-action
+    //a.cta.blue-button(href="#") Encourage Rapi
+    a.cta.blue-button(href="#") Pledge to Sponsor Rapi
+
+block activities
+  ul.activity-list
+    each activity in activities
+      li.activity-item
+        div.action-area.clearfix
+          div.img-area(style="background-image: url(#{activity.icon})")
+            a.fill-space
+          div.act
+            p.act-text
+              a.act-actor(href='#')= activity.source.label
+              span.act-action= activity.action
+              a.act-recipient(href='#')= activity.target.label
+              span.act-time-ago= activity.time_ago
+            p.act-brand
+              div!= activity.banner
+
+block more
+  //- div.badges
+  //-   ul.badges-list
+  //-     - for(var i = 0; i < 2; i ++) {
+
+  //-       li.badge-item.clearfix
+  //-         div.badge-img(style="background-image: url(/images/profile.jpg)")
+  //-         div.badge-label
+  //-           h4 Bernie Sanders Award for Best Caller
+  //-           span.date-received Dec 1 2015
+  //-     - }

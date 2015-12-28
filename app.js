@@ -1,167 +1,164 @@
-//
-// hello-mongoose: MongoDB with Mongoose on Node.js example on Heroku.
-// Mongoose is a object/data mapping utility for the MongoDB database.
-//
+var flash = require('express-flash'),
+    express = require('express');
+var expressSession = require('express-session');
+var sassMiddleware = require('node-sass-middleware');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 
-// by Ben Wen with thanks to Aaron Heckmann
+//Mongoose
+// getting-started.js
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/phonebankduel');
+mongoose.set('debug', true);
 
-//
-// Copyright 2015 ObjectLabs Corp.  
-// ObjectLabs operates MongoLab.com a MongoDb-as-a-Service offering
-//
-// MIT Licensed
-//
+//User model
+var User = require('./app/models/user');
 
-// Permission is hereby granted, free of charge, to any person
-// obtaining a copy of this software and associated documentation files
-// (the "Software"), to deal in the Software without restriction,
-// including without limitation the rights to use, copy, modify, merge,
-// publish, distribute, sublicense, and/or sell copies of the Software,
-// and to permit persons to whom the Software is furnished to do so,
-// subject to the following conditions:  
+//Routes
+var routes = require('./app/routes/index')
+  , admin = require('./app/routes/admin/index');
 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software. 
+var passport = require('passport')
+  , LocalStrategy = require('passport-local').Strategy;
 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
-// BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-// ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE. 
 
-//
-// Preamble
-var http = require ('http');	     // For serving a basic web page.
-var mongoose = require ("mongoose"); // The reason for this demo.
+var app = express();
 
-// Here we find an appropriate database to connect to, defaulting to
-// localhost if we don't find one.  
-var uristring = 
-  process.env.MONGOLAB_URI || 
-  process.env.MONGOHQ_URL || 
-  'mongodb://localhost/HelloMongoose';
+//Setup sass middleware
+app.use(sassMiddleware({
+    /* Options */
+    src: path.join(__dirname, 'app/styles'),
+    dest: path.join(__dirname, 'public/stylesheets'),
+    debug: true,
+    outputStyle: 'compressed',
+    prefix:  '/stylesheets'  // Where prefix is at <link rel="stylesheets" href="prefix/style.css"/>
+}));
 
-// The http server will listen to an appropriate port, or default to
-// port 5000.
-var theport = process.env.PORT || 5000;
+// view engine setup
+app.set('views', path.join(__dirname, 'app/views'));
+app.set('view engine', 'jade');
 
-// Makes connection asynchronously.  Mongoose will queue up database
-// operations and release them when the connection is complete.
-mongoose.connect(uristring, function (err, res) {
-  if (err) { 
-    console.log ('ERROR connecting to: ' + uristring + '. ' + err);
-  } else {
-    console.log ('Succeeded connected to: ' + uristring);
-  }
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(cookieParser());
+app.use(flash());
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+/*
+ * Configurations for `passport`
+ */
+app.use(expressSession({ secret: 'Bernie Sanders 2016' }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+/**
+ * setup Strategies for Passport
+ */
+passport.serializeUser(function(user, done) {
+  done(null, user);
 });
 
-// This is the schema.  Note the types, validation and trim
-// statements.  They enforce useful constraints on the data.
-var userSchema = new mongoose.Schema({
-  name: {
-    first: String,
-    last: { type: String, trim: true }
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
   },
-  age: { type: Number, min: 0}
-});
+  function(email, password, done) {
+    console.log("Entering LocalStrategy %s -- %s", email, password);
+    User.findOne({ email: email })
+      .populate('team')
+      .exec(function(err,user) {
 
-// Compiles the schema into a model, opening (or creating, if
-// nonexistent) the 'PowerUsers' collection in the MongoDB database
-var PUser = mongoose.model('PowerUsers', userSchema);
+      console.log("USER :: ", user);
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
 
-// Clear out old data
-PUser.remove({}, function(err) {
-  if (err) {
-    console.log ('error deleting old data.');
-  }
-});
-
-// Creating one user.
-var johndoe = new PUser ({
-  name: { first: 'John', last: 'Doe' },
-  age: 25
-});
-
-// Saving it to the database.  
-johndoe.save(function (err) {if (err) console.log ('Error on save!')});
-
-// Creating more users manually
-var janedoe = new PUser ({
-  name: { first: 'Jane', last: 'Doe' },
-  age: 65
-});
-janedoe.save(function (err) {if (err) console.log ('Error on save!')});
-
-// Creating more users manually
-var alicesmith = new PUser ({
-  name: { first: 'Alice', last: 'Smith' },
-  age: 45
-});
-alicesmith.save(function (err) {if (err) console.log ('Error on save!')});
-
-
-// In case the browser connects before the database is connected, the
-// user will see this message.
-var found = ['DB Connection not yet established.  Try again later.  Check the console output for error messages if this persists.'];
-
-// Create a rudimentary http server.  (Note, a real web application
-// would use a complete web framework and router like express.js). 
-// This is effectively the main interaction loop for the application. 
-// As new http requests arrive, the callback function gets invoked.
-http.createServer(function (req, res) {
-  res.writeHead(200, {'Content-Type': 'text/html'});
-  createWebpage(req, res);
-}).listen(theport);
-
-function createWebpage (req, res) {
-  // Let's find all the documents
-  PUser.find({}).exec(function(err, result) { 
-    if (!err) { 
-      res.write(html1 + JSON.stringify(result, undefined, 2) +  html2 + result.length + html3);
-      // Let's see if there are any senior citizens (older than 64) with the last name Doe using the query constructor
-      var query = PUser.find({'name.last': 'Doe'}); // (ok in this example, it's all entries)
-      query.where('age').gt(64);
-      query.exec(function(err, result) {
-	if (!err) {
-	  res.end(html4 + JSON.stringify(result, undefined, 2) + html5 + result.length + html6);
-	} else {
-	  res.end('Error in second query. ' + err)
-	}
+      user.validPassword(password, function(err, isMatch) {
+        console.log(err, isMatch);
+        if ( !isMatch ) {
+          return done(null, false, { message: 'Incorrect password.' });
+        } else {
+          return done(null, user);
+        }
       });
-    } else {
-      res.end('Error in first query. ' + err)
+
+    });
+  }
+));
+
+/*
+ * Route definitions
+ */
+app.get('*',function(req,res, next) {
+  res.locals.loggedIn = (req.user) ? true : false;
+  if (req.user) {
+    res.locals._user = {
+      team: req.user.team.name,
+      username: req.user.username,
+      name: req.user.name,
+      photo: req.user.photo
     };
+  }
+  next();
+});
+
+//Create session and then redirect
+app.post('/login', passport.authenticate('local', { successRedirect: '/',
+                                   failureRedirect: '/user/login',
+                                   failureFlash: true })
+);
+app.get('/logout', function(req, res, next) {
+  req.logout();
+  res.redirect('/');
+});
+
+app.use('/', routes);
+app.use('/admin', admin);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
   });
 }
 
-// Tell the console we're getting ready.
-// The listener in http.createServer should still be active after these messages are emitted.
-console.log('http server will be listening on port %d', theport);
-console.log('CTRL+C to exit');
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
 
-//
-// House keeping.
+app.listen(3000);
 
-//
-// The rudimentary HTML content in three pieces.
-var html1 = '<title> hello-mongoose: MongoLab MongoDB Mongoose Node.js Demo on Heroku </title> \
-<head> \
-<style> body {color: #394a5f; font-family: sans-serif} </style> \
-</head> \
-<body> \
-<h1> hello-mongoose: MongoLab MongoDB Mongoose Node.js Demo on Heroku </h1> \
-See the <a href="https://devcenter.heroku.com/articles/nodejs-mongoose">supporting article on the Dev Center</a> to learn more about data modeling with Mongoose. \
-<br\> \
-<br\> \
-<br\> <h2> All Documents in MonogoDB database </h2> <pre><code> ';
-var html2 = '</code></pre> <br\> <i>';
-var html3 = ' documents. </i> <br\> <br\>';
-var html4 = '<h2> Queried (name.last = "Doe", age >64) Documents in MonogoDB database </h2> <pre><code> ';
-var html5 = '</code></pre> <br\> <i>';
-var html6 = ' documents. </i> <br\> <br\> \
-<br\> <br\> <center><i> Demo code available at <a href="http://github.com/mongolab/hello-mongoose">github.com</a> </i></center>';
-
-
+module.exports = app;

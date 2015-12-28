@@ -1,0 +1,37 @@
+header.clearfix
+  div.viewport
+    a(href='/')
+      span#logo Phonebank Duel (ALPHA)
+    div#nav-area
+      nav
+        ul.menu-list
+          li.menu-item
+            a(href='/rank/caller') Caller Ranking
+          li.menu-item
+            a(href="/rank/team") Team Ranking
+          li.menu-item Command Center (Coming Soon)
+          li.menu-item
+            a(href='http://organize.berniesanders.com/', target='_blank') Phonebank
+          - if ( loggedIn ) {
+            li.with-submenu.menu-item.profile
+              a(href="/user/" + _user.username)
+                img(src= _user.photo, width="20px", height="20px")
+                span= _user.username
+              ul.submenu
+                li.submenu-item
+                  a(href='/team/' + _user.team) My Team
+                li.submenu-item
+                  a(href='https://docs.google.com/forms/d/15zawSuJwEOmeq1ULse6fOLDqK2LNTwBp2RibTfh17vU/viewform', target='_blank') Submit Call
+                li.submenu-item
+                  a(href='/user/edit') Edit Profile
+                li.separator
+                li.submenu-item
+                  a(href='/logout') Logout
+          - } else {
+              li.menu-item
+                a(href="/user/register") Register
+          - }
+
+
+
+

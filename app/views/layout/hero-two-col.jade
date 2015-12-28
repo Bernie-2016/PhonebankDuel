@@ -1,0 +1,87 @@
+doctype html
+html
+  head
+    title= title
+    link(href='https://fonts.googleapis.com/css?family=Lato:100,900,700,400,300'
+         rel='stylesheet'
+         type='text/css')
+    link(rel='stylesheet', href='/stylesheets/pbd.css')
+    link(rel='stylesheet', href='/stylesheets/c3.css')
+  body(id= layout)
+    .content
+      include ../partial/header.jade
+      include ../partial/flash.jade
+      section#profile
+        block profile
+      section#content.clearfix
+        article#information
+          block information
+        article#activity
+          block activities
+        article#more
+          block more
+
+      include ../partial/footer.jade
+      script(src='/javascripts/d3.js', type='text/javascript')
+      script(src='/javascripts/c3.js', type='text/javascript')
+      script(type='text/javascript').
+        window.weeklyData = !{calls.weekly};
+        window.monthlyData = !{calls.monthly};
+      script(type='text/javascript').
+        window.pageFactory = (function(){
+          // Arrange weekly data
+          c3.generate({
+            bindto: '#weekly-calls',
+            data: {
+              x: 'date',
+              columns: [
+                ['date'].concat(window.weeklyData.map(function(i){ return i._id})),
+                ['calls'].concat(window.weeklyData.map(function(i){ return i.count}))
+              ],
+              type: 'bar'
+            },
+            legend:{ show: false },
+            axis: {
+              x: {
+                type: 'timeseries',
+                tick: {
+                  format: '%a'
+                },
+                //- show: false
+              },
+              y: { show: false }
+            },
+            bar: {
+              width: 20
+            }
+          });
+
+          //Weekly dAta
+          c3.generate({
+            bindto: '#monthly-chart',
+            data: {
+              x: 'date',
+              columns: [
+                ['date'].concat(window.monthlyData.map(function(i){ return i._id})),
+                ['calls'].concat(window.monthlyData.map(function(i){ return i.count}))
+              ],
+              type: 'bar'
+            },
+            legend:{ show: false },
+            axis: {
+              x: {
+                type: 'timeseries',
+                //- tick: {
+                //-   format: '%a'
+                //- },
+                //- show: false
+              },
+              y: { show: false }
+            },
+            bar: {
+              width: 20
+            }
+          });
+
+
+        })();

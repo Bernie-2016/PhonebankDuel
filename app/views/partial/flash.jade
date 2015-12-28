@@ -1,0 +1,11 @@
+- if(messages.info) {
+    div.flash(data-type= "info")
+      span= messages.info
+      div.hide-flash
+        a.hide-flash-button(href='javascript: void(null);') x
+- } else if (messages.error) {
+    div.flash(data-type= "error")
+      span= messages.error
+      div.hide-flash
+        a.hide-flash-button(href='javascript: void(null);') x
+- }

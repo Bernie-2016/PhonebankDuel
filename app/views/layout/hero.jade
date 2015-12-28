@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    title= title
+    link(href='https://fonts.googleapis.com/css?family=Lato:100,900,700,400,300'
+         rel='stylesheet'
+         type='text/css')
+    link(rel='stylesheet', href='/stylesheets/pbd.css')
+  body#hero-layout
+    .content
+      include ../partial/header.jade
+      include ../partial/flash.jade
+
+      section#hero
+        block hero_content
+
+      include ../partial/footer.jade
+

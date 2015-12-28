@@ -1,0 +1,25 @@
+doctype html
+html
+  head
+    title= title
+    link(href='https://fonts.googleapis.com/css?family=Lato:100,900,700,400,300'
+         rel='stylesheet'
+         type='text/css')
+    link(rel='stylesheet', href='/stylesheets/pbd.css')
+    link(rel='stylesheet', href='/stylesheets/c3.css')
+  body#rank-layout
+    .content
+      include ../partial/header.jade
+      include ../partial/flash.jade
+      div.clearfix
+        section#left-col
+          block left_content
+        section#right-col
+          block right_content
+
+      include ../partial/footer.jade
+
+    script(src='/javascripts/d3.js', type='text/javascript')
+    script(src='/javascripts/c3.js', type='text/javascript')
+
+    block script_content
