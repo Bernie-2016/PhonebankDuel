@@ -12,6 +12,7 @@ console.log("XXXX", require('./team'));
 // Atomic entity for Calls checked in daily
 var callSchema = new Schema({
       call_time: Date,
+      assignment: String,
       user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
       count: { type: Number, default: 1 }
@@ -24,8 +25,9 @@ callSchema.statics.getTopTeamThisWeek = function(callback) {
   this.aggregate(
       [
       {$match: {
-          call_time: { $gt: moment().startOf('week')._d }
-        }
+          call_time: { $gt: moment().startOf('week')._d },
+          team: { $ne: null }
+        },
       },
       {
         $group: {
@@ -59,7 +61,8 @@ callSchema.statics.getTopUserThisWeek = function(callback) {
   this.aggregate(
       [
       {$match: {
-          call_time: { $gt: moment().startOf('week')._d }
+          call_time: { $gt: moment().startOf('week')._d },
+          user: { $ne: null }
         }
       },
       {
@@ -95,6 +98,10 @@ callSchema.statics.getTopUserThisWeek = function(callback) {
 callSchema.statics.getTopTeamOverall = function(callback) {
   this.aggregate(
       [
+      { $match: {
+          team: { $ne: null }
+        }
+      },
       {
         $group: {
           _id: {
@@ -130,6 +137,10 @@ callSchema.statics.getTopTeamOverall = function(callback) {
 callSchema.statics.getTopUserOverall = function(callback) {
   this.aggregate(
       [
+      { $match: {
+          user: { $ne: null }
+        }
+      },
       {
         $group: {
           _id: {
@@ -193,13 +204,13 @@ callSchema.statics.getCallsThisWeek = function(target, callback) {
         callback(null, false);
       } else{
         //Fill out
-        while (calls.length < 7) {
-          calls.push(
-            {
-              _id: moment().startOf('week').add(calls.length, 'days').format("YYYY-MM-DD"),
-              count: 0
-            });
-        }
+        // while (calls.length < 7) {
+        //   calls.push(
+        //     {
+        //       _id: moment().startOf('week').add(calls.length, 'days').format("YYYY-MM-DD"),
+        //       count: 0
+        //     });
+        // }
         callback(null, calls);
       }
     })
@@ -211,12 +222,12 @@ callSchema.statics.getCallsThisMonth = function(target, callback) {
   var match = {};
   if ( target instanceof User) {
     match = {$match: {
-                call_time: { $gt: moment().subtract(30, 'days')._d },
+                // call_time: { $gt: moment().subtract(30, 'days')._d },
                 user: target._id
             }};
   } else if ( target instanceof Team) {
     match = {$match: {
-                call_time: { $gt: moment().subtract(30, 'days')._d },
+                // call_time: { $gt: moment().subtract(30, 'days')._d },
                 team: target._id
             }};
   }

@@ -11,7 +11,10 @@ block left_content
           - if ( !rank.count ) continue;
             li.rank-item
               div.rank= i+1
-              div.photo(style= "background-image: url(" + rank._id.user.photo + ")")
+              if rank._id.user.photo
+                div.photo(style= "background-image: url(" + rank._id.user.photo + ")")
+              else
+                div.photo(style= "background-image: url(/images/profile.jpg)")
               div.name
                 h5
                   a(href= "/user/" + rank._id.user.username)= rank._id.user.username
@@ -30,10 +33,16 @@ block right_content
           - if ( !rank.count ) continue;
             li.rank-item
               div.rank= i+1
-              div.photo(style= "background-image: url(" + rank._id.user.photo + ")")
+
+              if rank._id.user
+                div.photo(style= "background-image: url(" + rank._id.user.photo + ")")
+              else
+                div.photo(style= "background-image: url(/images/profile.jpg)")
+
               div.name
                 h5
-                  a(href= "/user/" + rank._id.user.username)= rank._id.user.username
+                  if rank._id.user
+                    a(href= "/user/" + rank._id.user.username)= rank._id.user.username
                 h3= rank.count
         - };
     div#overall-chart.actual-chart

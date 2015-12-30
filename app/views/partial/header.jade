@@ -11,15 +11,16 @@ header.clearfix
             a(href="/rank/team") Team Ranking
           li.menu-item Command Center (Coming Soon)
           li.menu-item
-            a(href='http://organize.berniesanders.com/', target='_blank') Phonebank
+            a(href='http://organize.berniesanders.com/', target='_blank') Call for Bernie
           - if ( loggedIn ) {
             li.with-submenu.menu-item.profile
               a(href="/user/" + _user.username)
                 img(src= _user.photo, width="20px", height="20px")
                 span= _user.username
               ul.submenu
-                li.submenu-item
-                  a(href='/team/' + _user.team) My Team
+                if _user.team
+                  li.submenu-item
+                    a(href='/team') My Team
                 li.submenu-item
                   a(href='https://docs.google.com/forms/d/15zawSuJwEOmeq1ULse6fOLDqK2LNTwBp2RibTfh17vU/viewform', target='_blank') Submit Call
                 li.submenu-item

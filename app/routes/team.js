@@ -6,12 +6,24 @@ var Team = require('../models/team'),
     Call = require('../models/call');
 
 // Start of Index
+router.get('/', function(req, res, next) {
+  if (req.user) { // logged in
+    Team.findById(req.user.team, function(err, team) {
+      req.url = '/' + team.name;
+      next('route');
+    })
+  } else {
+    res.redirect('/');
+  }
+
+});
+
 // * get current user's team, otherwise, go to homepage
 router.get('/:teamname', function(req, res, next) {
     //1 - get Team target
     Team
       .findOne({ name: req.params.teamname })
-      .populate('mentor members')
+      .populate('mentor')
       .exec(function(err, team) {
         if (err) throw err;
 
@@ -21,7 +33,18 @@ router.get('/:teamname', function(req, res, next) {
       });
   })
   .get('/:teamname', function(req, res, next) {
-      // 2 - Get activities
+      // 2 - Get members
+      var team = req.team;
+      User.
+        find({
+          team: team._id
+        }).exec(function(err, users) {
+          req.members = users;
+          next();
+        });
+  })
+  .get('/:teamname', function(req, res, next) {
+      // 3 - Get activities
       var team= req.team;
       Activity
           .find({teams_involved: team._id })
@@ -38,6 +61,15 @@ router.get('/:teamname', function(req, res, next) {
     req.calls = {};
 
     Call.getCallsThisWeek(team, function(err, calls) {
+
+      var total = 0;
+      for (var i = 0; i < calls.length; i ++ ) {
+        total += calls[i].count;
+      }
+      req.calls.weeklyCount =
+        total < 10000 ? total : numeral(total).format('0.0a').replace(".0", "");
+
+
       req.calls.weekly = JSON.stringify(calls);
       next();
     });
@@ -47,6 +79,12 @@ router.get('/:teamname', function(req, res, next) {
     Call.getCallsThisMonth(team, function(err, calls) {
 
       //Prep for C3 use
+      var total = 0;
+      for (var i = 0; i < calls.length; i ++ ) {
+        total += calls[i].count;
+      }
+      req.calls.monthlyCount =
+        total < 10000 ? total : numeral(total).format('0.0a').replace(".0", "");
 
       req.calls.monthly = JSON.stringify(calls);
       next();
@@ -60,7 +98,8 @@ router.get('/:teamname', function(req, res, next) {
         layout: "profile-layout",
         team: req.team,
         activities: req.activities,
-        calls: req.calls
+        calls: req.calls,
+        members: req.members
       }
     );
 

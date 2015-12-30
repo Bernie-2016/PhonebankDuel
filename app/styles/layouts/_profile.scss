@@ -13,6 +13,16 @@ body#profile-layout {
   /* Start of profile section...*/
   section#profile {
     background-color: whitesmoke;
+    .announcement {
+
+      padding: 10px 0;
+      background: white;
+
+      h5 {
+        padding: 10px;
+        background: #C8F8F0;
+      }
+    }
 
     // div.profile-area
     div.profile-area {
@@ -141,6 +151,7 @@ body#profile-layout {
       //end of chart for the last 30 days
 
       .info-ranking {
+        display: none; // for now
         margin-bottom: 25px;
         & > div {
           width: calc(49.5% - 20px);
@@ -217,10 +228,11 @@ body#profile-layout {
             }
             div.act {
               margin-left: 5px;
+              width: 440px;
               p {
                 & > * { vertical-align: middle; margin-right: 4px; }
                 .act-action { font-weight: 600; }
-                .act-time-ago { color: lightgray; font-size: 12px; vertical-align: bottom; }
+                .act-time-ago { color: lightgray; font-size: 12px; vertical-align: bottom; word-wrap: normal; white-space: nowrap; }
 
                 &.act-brand {
                   margin-top: 5px;

@@ -29,7 +29,7 @@ var activitySchema = new Schema({
 }, {collection: 'Activity'});
 
 activitySchema.virtual('time_ago').get(function() {
-  return moment(this.activity).fromNow();
+  return moment(this.activity_date).fromNow();
 });
 
 var Activity = mongoose.model('Activity', activitySchema);

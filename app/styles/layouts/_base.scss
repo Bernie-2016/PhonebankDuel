@@ -3,6 +3,7 @@ html,body {
   height: 100%;
   text-align: center;
   font-family: 'Lato', sans-serif;
+
   // Start of div.flash
   div.flash {
     padding: 10px 5px;
@@ -56,7 +57,7 @@ html,body {
             ul.submenu {
               display: none;
               position: absolute;
-              background-color: #EBEBEB;
+              background-color: #F3F3F3;
 
               padding: 10px;
               width: 150px;
@@ -90,7 +91,7 @@ html,body {
             }
 
             &.with-submenu:hover {
-              background-color: #EBEBEB;
+              background-color: #F3F3F3;
               & > ul.submenu {
                 display: block;
               }

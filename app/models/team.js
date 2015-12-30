@@ -110,7 +110,7 @@ teamSchema.methods.getCallsThisMonth = function(callback) {
       [
       // {$project: { user: 1 }},
       {$match: {
-          call_time: { $gt: moment().subtract(30, 'days')._d },
+          // call_time: { $gt: moment().subtract(30, 'days')._d },
           team: that._id
               }},
       {

@@ -15,7 +15,7 @@ var userSchema = new Schema({
   name: String,
   email: { type: String, required: true, unique: true },
   photo: {type: String, default: '/images/profile.jpg'},
-  password: { type: String, required: true, minlength: [8, "Password should have a minimum of eight(8) characters"] },
+  password: { type: String, required: true, default: '', minlength: [8, "Password should have a minimum of eight(8) characters"] },
 
   team: {type: mongoose.Schema.Types.ObjectId, ref: 'Team'},
 
@@ -25,28 +25,49 @@ var userSchema = new Schema({
   activated: {type: Boolean, default: false},
   registration_code: String,
 
-  created_at: Date,
+  created_at: {type: Date, default: null},
   updated_at: Date,
 
   calls_made: {
-    overall: {type: Number, default: 15000},
-    this_week: {type: Number, default: 15000},
-    weekly: [{week: String, calls: {type: Number, default: 1} }]
+    overall: {type: Number, default: 0},
+    this_week: {type: Number, default: 0},
+    weekly: [{week: String, calls: {type: Number, default: 0} }]
   },
   ranking: {
-    overall: {type: Number, default: 1},
-    this_week: {type: Number, default: 1},
-    weekly: [{week: String, rank: {type: Number, default: 1} }]
+    overall: {type: Number, default: null},
+    this_week: {type: Number, default: null},
+    weekly: [{week: String, rank: {type: Number, default: null} }]
+  },
+
+  meta: {
+    fundraising_link: {type: String, default: ''}
   }
 
 }, {collection: 'User'});
 
+userSchema.methods.changePassword = function(newPassword, callback) {
+  var that = this;
+  bcrypt.hash(newPassword, null, null, function(err, hash) {
+    console.log("saving new password ", hash);
+    that.password = hash;
+    console.log("Password about to be saved");
+    callback(err);
+  });
+};
 
 userSchema.methods.encryptPassword = function(next) {
   var that = this;
   bcrypt.hash(this.password, null, null, function(err, hash) {
     that.password = hash;
     next();
+  });
+};
+
+userSchema.methods.encryptPasswordCallback = function(callback) {
+  var that = this;
+  bcrypt.hash(this.password, null, null, function(err, hash) {
+    that.password = hash;
+    callback();
   });
 };
 
@@ -113,8 +134,9 @@ userSchema.pre('save', function(next) {
   if (!this.created_at) {
     this.created_at = currentDate;
     this.encryptPassword(next);
+  } else {
+    next();
   }
-  // next();
 });
 
 

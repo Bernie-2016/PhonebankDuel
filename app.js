@@ -8,25 +8,20 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-//
-var uristring =
+//Getting config variables
+var __MONGO_URL__ =
   process.env.MONGOLAB_URI ||
   process.env.MONGOHQ_URL ||
-  'mongodb://localhost/HelloMongoose';
+  'mongodb://localhost/phonebankduel';
 
-  var theport = process.env.PORT || 5000;
+var __PORT__ = process.env.PORT || 5000;
+
+var __REDISTOGO_URL__ = process.env.REDISTOGO_URL || 'redis://localhost:6379';
 
 //Mongoose
 // getting-started.js
 var mongoose = require('mongoose');
-mongoose.connect(uristring, function (err, res) {
-  if (err) {
-    console.log ('ERROR connecting to: ' + uristring + '. ' + err);
-  } else {
-    console.log ('Succeeded connected to: ' + uristring);
-  }
-});
-
+mongoose.connect(__MONGO_URL__);
 mongoose.set('debug', true);
 
 //User model
@@ -71,7 +66,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 /*
  * Configurations for `passport`
  */
-app.use(expressSession({ secret: 'Bernie Sanders 2016' }));
+// app.use(expressSession({ secret: 'Bernie Sanders 2016' }));
+// var session = require('express-session');
+//Configuring redis session..
+var RedisStore = require('connect-redis')(expressSession);
+app.use(expressSession({
+    store: new RedisStore({ url: __REDISTOGO_URL__ }),
+    secret: 'keyboard cat'
+}));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -79,12 +82,16 @@ app.use(passport.session());
  * setup Strategies for Passport
  */
 passport.serializeUser(function(user, done) {
-  done(null, user);
+  done(null, user.id);
 });
 
-passport.deserializeUser(function(user, done) {
-  done(null, user);
+passport.deserializeUser(function(userId, done) {
+  console.log("DESERIALIZING ::: ", userId);
+  User.findById(userId, function(err, user) {
+    done(err, user);
+  });
 });
+
 passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'
@@ -92,7 +99,7 @@ passport.use(new LocalStrategy({
   function(email, password, done) {
     console.log("Entering LocalStrategy %s -- %s", email, password);
     User.findOne({ email: email })
-      .populate('team')
+      // .populate('team')
       .exec(function(err,user) {
 
       console.log("USER :: ", user);
@@ -121,7 +128,6 @@ app.get('*',function(req,res, next) {
   res.locals.loggedIn = (req.user) ? true : false;
   if (req.user) {
     res.locals._user = {
-      team: req.user.team.name,
       username: req.user.username,
       name: req.user.name,
       photo: req.user.photo
@@ -174,6 +180,6 @@ app.use(function(err, req, res, next) {
   });
 });
 
-app.listen(theport);
+app.listen(__PORT__);
 
 module.exports = app;

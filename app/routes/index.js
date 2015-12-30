@@ -15,8 +15,7 @@ router.get('/', function(req, res, next) {
   if ( !req.user ) {
     res.render('user/login');
   } else {
-
-    //Otherwise go to his userpage
+    //Otherwise go to userpage
     req.url = '/user/' + req.user.username;
     next('route');
   }

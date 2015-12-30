@@ -1,19 +1,26 @@
 extends layout/hero-two-col
 
 block profile
+  - if (user.password == '') {
+      div.announcement
+        h5 Are you #{user.username}? Own this account by <a href='/user/register'>registering</a> to the Phonebank Duel.
+  - }
   div.profile-area.clearfix
     div.profile-img
       img(src= user.photo)
     div.profile-name-status
       h1 #{user.username}
-      h3
-        span Team&nbsp;
-        a(href='/team/' + user.team.name)= user.team.name
+      if user.team
+        h3
+          span Team&nbsp;
+          a(href='/team/' + user.team.name)= user.team.name
+
       div.call-counters.clearfix
         div.call-count
-          .hero= user.abbrev.calls_made
+          //- .hero= user.abbrev.calls_made
+          .hero= calls.monthlyCount
           div Calls Made
-          //- div since Jul 2015
+          div this month
         div#monthly-chart.call-chart
 
 block information
@@ -33,13 +40,15 @@ block information
     h4 This Week
     div.weekly-calls.clearfix
       h5
-        div.hero= user.abbrev.calls_this_week
+        // div.hero= user.abbrev.calls_this_week
+        div.hero= calls.weeklyCount
         div Calls Made
       div#weekly-calls
 
   div.call-to-action
     //a.cta.blue-button(href="#") Encourage Rapi
-    a.cta.blue-button(href="#") Pledge to Sponsor Rapi
+    if user.meta.fundraising_link
+      a.cta.blue-button(href= user.meta.fundraising_link target="_blank") Pledge to Sponsor Rapi
 
 block activities
   ul.activity-list
@@ -50,9 +59,9 @@ block activities
             a.fill-space
           div.act
             p.act-text
-              a.act-actor(href='#')= activity.source.label
+              a.act-actor(href= activity.source.url)= activity.source.label
               span.act-action= activity.action
-              a.act-recipient(href='#')= activity.target.label
+              a.act-recipient(href= activity.target.url)= activity.target.label
               span.act-time-ago= activity.time_ago
             p.act-brand
               div!= activity.banner
@@ -68,3 +77,68 @@ block more
   //-           h4 Bernie Sanders Award for Best Caller
   //-           span.date-received Dec 1 2015
   //-     - }
+
+block scripts
+  script(src='/javascripts/d3.js', type='text/javascript')
+  script(src='/javascripts/c3.js', type='text/javascript')
+  script(type='text/javascript').
+    window.weeklyData = !{calls.weekly};
+    window.monthlyData = !{calls.monthly};
+  script(type='text/javascript').
+    window.pageFactory = (function(){
+      // Arrange weekly data
+      c3.generate({
+        bindto: '#weekly-calls',
+        data: {
+          x: 'date',
+          columns: [
+            ['date'].concat(window.weeklyData.map(function(i){ return i._id})),
+            ['calls'].concat(window.weeklyData.map(function(i){ return i.count}))
+          ],
+          type: 'bar'
+        },
+        legend:{ show: false },
+        axis: {
+          x: {
+            type: 'timeseries',
+            tick: {
+              format: '%a'
+            },
+            //- show: false
+          },
+          y: { show: false }
+        },
+        bar: {
+          width: 20
+        }
+      });
+
+      //Weekly dAta
+      c3.generate({
+        bindto: '#monthly-chart',
+        data: {
+          x: 'date',
+          columns: [
+            ['date'].concat(window.monthlyData.map(function(i){ return i._id})),
+            ['calls'].concat(window.monthlyData.map(function(i){ return i.count}))
+          ],
+          type: 'bar'
+        },
+        legend:{ show: false },
+        axis: {
+          x: {
+            type: 'timeseries',
+            //- tick: {
+            //-   format: '%a'
+            //- },
+            //- show: false
+          },
+          y: { show: false }
+        },
+        bar: {
+          //- width: 20
+        }
+      });
+
+
+    })();

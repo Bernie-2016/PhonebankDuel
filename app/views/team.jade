@@ -5,13 +5,14 @@ block profile
     div.profile-img
       img(src='/images/profile.jpg')
     div.profile-name-status
-      h1 Team #{team.name} (#{team.members.length} Members)
+      h1 Team #{team.name} (#{members.length} Members)
       h3 Mentor:&nbsp;
         a(href= "/user/" + team.mentor.username)= team.mentor.username
       div.call-counters.clearfix
         div.call-count
-          .hero= team.abbrev.calls_made
+          .hero= calls.monthlyCount
           div Calls Made
+          div This month
           //- div since Jul 2015
         div#monthly-chart.call-chart
 
@@ -34,22 +35,22 @@ block information
     h4 This Week
     div.weekly-calls.clearfix
       h5
-        div.hero 100
+        div.hero= calls.weeklyCount
         div Calls Made
       div#weekly-calls
 
   //list of all members
   div.member-list-area
-    h4 Members (#{team.members.length})
+    h4 Members (#{members.length})
       ul.member-list
-        each mem in team.members
+        each mem in members
           li.member-item
             a.member(href="/user/" + mem.username)
               img(src= mem.photo)
 
 
-  div.call-to-action
-    a.cta.blue-button(href="#", style='line-height: 1.5') Pledge to Sponsor <br/>Team #{team.name}
+  //- div.call-to-action
+  //-   a.cta.blue-button(href="#", style='line-height: 1.5') Pledge to Sponsor <br/>Team #{team.name}
 
 block activities
   ul.activity-list
@@ -57,13 +58,13 @@ block activities
 
       li.activity-item
         div.action-area.clearfix
-          div.img-area(style="background-image: url(/images/profile.jpg)")
+          div.img-area(style="background-image: url(" + activity.icon + ")")
             a.fill-space
           div.act
             p.act-text
-              a.act-actor(href='#')= activity.source.label
+              a.act-actor(href= activity.source.url)= activity.source.label
               span.act-action= activity.action
-              a.act-recipient(href='#')= activity.target.label
+              a.act-recipient(href= activity.target.url)= activity.target.label
               span.act-time-ago= activity.time_ago
             p.act-brand
               each user in activity.users_involved
@@ -71,13 +72,77 @@ block activities
                     img(src= user.photo, style='width: 30px; height: 30px;')
 
 block more
-  div.badges
-    ul.badges-list
-      - for(var i = 0; i < 2; i ++) {
+  //- div.badges
+  //-   ul.badges-list
+  //-     - for(var i = 0; i < 2; i ++) {
 
-        li.badge-item.clearfix
-          div.badge-img(style="background-image: url(/images/profile.jpg)")
-          div.badge-label
-            h4 Bernie Sanders Award for Best Caller
-            span.date-received Dec 1 2015
-      - }
+  //-       li.badge-item.clearfix
+  //-         div.badge-img(style="background-image: url(/images/profile.jpg)")
+  //-         div.badge-label
+  //-           h4 Bernie Sanders Award for Best Caller
+  //-           span.date-received Dec 1 2015
+  //-     - }
+block scripts
+  script(src='/javascripts/d3.js', type='text/javascript')
+  script(src='/javascripts/c3.js', type='text/javascript')
+  script(type='text/javascript').
+    window.weeklyData = !{calls.weekly};
+    window.monthlyData = !{calls.monthly};
+  script(type='text/javascript').
+    window.pageFactory = (function(){
+      // Arrange weekly data
+      c3.generate({
+        bindto: '#weekly-calls',
+        data: {
+          x: 'date',
+          columns: [
+            ['date'].concat(window.weeklyData.map(function(i){ return i._id})),
+            ['calls'].concat(window.weeklyData.map(function(i){ return i.count}))
+          ],
+          type: 'bar'
+        },
+        legend:{ show: false },
+        axis: {
+          x: {
+            type: 'timeseries',
+            tick: {
+              format: '%a'
+            },
+            //- show: false
+          },
+          y: { show: false }
+        },
+        bar: {
+          width: 20
+        }
+      });
+
+      //Weekly dAta
+      c3.generate({
+        bindto: '#monthly-chart',
+        data: {
+          x: 'date',
+          columns: [
+            ['date'].concat(window.monthlyData.map(function(i){ return i._id})),
+            ['calls'].concat(window.monthlyData.map(function(i){ return i.count}))
+          ],
+          type: 'bar'
+        },
+        legend:{ show: false },
+        axis: {
+          x: {
+            type: 'timeseries',
+            //- tick: {
+            //-   format: '%a'
+            //- },
+            //- show: false
+          },
+          y: { show: false }
+        },
+        bar: {
+          width: 20
+        }
+      });
+
+
+    })();
