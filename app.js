@@ -72,7 +72,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 var RedisStore = require('connect-redis')(expressSession);
 app.use(expressSession({
     store: new RedisStore({ url: __REDISTOGO_URL__ }),
-    secret: 'keyboard cat'
+    secret: 'keyboard cat',
     resave: true,
     saveUninitialized: true
 }));
