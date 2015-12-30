@@ -104,7 +104,22 @@ router.route('/register')
     console.log("XYXYXYX", newUser);
 
     req.user = newUser;
-    req.existing.remove(function(err) {
+    if (req.existing) {
+      req.existing.remove(function(err) {
+        newUser.save(function(err) {
+          if (err) {
+            console.log("ERRRORRRR ::: ", err);
+            if (err.errors.password) {
+              req.flash("error", "Error: " + err.errors.password.message);
+            }
+            res.redirect('/user/register');
+            res.end();
+          } else {
+            next();
+          }
+        });
+      });
+    } else {
       newUser.save(function(err) {
         if (err) {
           console.log("ERRRORRRR ::: ", err);
@@ -117,7 +132,7 @@ router.route('/register')
           next();
         }
       });
-    });
+    }
 
   })
   .post(function(req,res,next) {
