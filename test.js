@@ -116,11 +116,18 @@ var saveActivities = function(callback) {
         //Create Users if needed
         async.eachSeries(json.result, function(callReport, callback) {
 
-          // SET DATA
+          // console.log(dataObj);
+          // callback(null);
+
+
+
           var callDate = new Date(callReport.Timestamp);
 
+
           // console.log(callDate);
-          if(callDate < currentDate) { callback(null); return; }
+          if(callDate <= currentDate) { callback(null); return;  }
+
+          console.log(currentDate, " --- ", callDate);
 
 
           var date = new Date(callReport.Timestamp);
@@ -133,24 +140,26 @@ var saveActivities = function(callback) {
           // console.log(team, teamRexp);
           var teamName = (!teamRexp || team == "[Blank]") ? null : teamRexp[1];
 
-          if(!email || email == '' ) { callback(null); return;  }
+          if(!email || email == '' ) { callback(null); return; }
           if(!username || username == '' ) { callback(null); return; }
           if(!date ) { callback(null); return; }
 
-          var dataObj = {
-              date: date,
-              username: username,
-              email: email,
-              callCount: callCount,
-              assignment: assignment,
-              teamName: teamName
-          };
-
-          console.log(dataObj);
-          // callback(null);
 
           async.waterfall([
             function(callback) {
+
+
+              var dataObj = {
+                  date: date,
+                  username: username,
+                  email: email,
+                  callCount: callCount,
+                  assignment: assignment,
+                  teamName: teamName
+              };
+              callback(null, dataObj);
+            },
+            function(dataObj, callback) {
               //check team
               console.log("1. GETTING Team");
               if (dataObj.teamName) {
@@ -167,7 +176,7 @@ var saveActivities = function(callback) {
               console.log("2. Finding User");
               User.findOne({ email: obj.email }, function(err, user) {
                 if (!user) {
-                  User.collection.insert({ email: email, username: username, password: '', team: (team ? team._id : null) }, function(err, newTarget) {
+                  User.collection.insert({ email: obj.email, username: obj.username, password: '', team: (team ? team._id : null) }, function(err, newTarget) {
                     //send user
                     User.find({ email: obj.email }, function(err, user) {
                       callback(null, obj, team, user);
@@ -222,7 +231,10 @@ var saveActivities = function(callback) {
               }
             ],
               function(err) {
-                console.log("5. Everything is done!");
+                if (err) {
+                  console.log("Error happened :: ", err);
+                }
+                console.log("5. Everything is done! ");
                 callback(null);
               }
             ); // End of Waterfall
