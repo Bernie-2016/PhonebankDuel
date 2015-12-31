@@ -1,0 +1,66 @@
+extends ../layout/hero-two-col
+
+//- blank or at least small
+block profile
+
+//- First column - Submenuss
+block information
+  div#left-col-menus
+    h1 Create Team
+    p.help-info By creating a team you will be the mentor for that team.
+    //- ul
+    //-   li.left-menu-item
+    //-     a(href='/team/edit', class= currentPage=='/edit' ? "active-link" : "") Team Profile
+    //-   li.left-menu-item
+    //-     a(href='/team/edit/logo', class= currentPage=='/edit/logo' ? "active-link" : "") Change Logo
+    //-   li.left-menu-item
+    //-     a(href='/team/edit/members', class= currentPage=='/edit/members' ? "active-link" : "") Manage Members
+    //-   li.left-menu-item
+    //-     a(href='/team/edit/fundraising', class= currentPage=='/edit/fundraising' ? "active-link" : "") Fundraising
+
+
+//- Second column for various profile items
+block activities
+  div#main-form-content
+    form#main-form(action='/team/create', method='POST', enctype="multipart/form-data")
+      table#profile-area
+        tr#name-area
+          td
+            label Team Name
+          td
+            input(type='text', name='team[name]')
+        //- tr#username-area
+        //-   td
+        //-     label Description
+        //-   td
+        //-     input(type='text', name='user[username]' )
+        tr#name-area
+          td
+            label Team Logo
+          td.photo-column
+            //- div.photo-area(style='background-image: url(/images/profile.jpg)')
+            //-   img.photo-icon(src= "/images/camera.png", width='100px', height='100px', onclick)
+            input(type='file', name='photo', style='margin-left: 20px; margin-top: 4px;')
+        tr
+          td(colspan=2) &nbsp;
+        tr
+          td
+            label Fundraising Link
+          td
+            input(type='text' name='team[fundraising_link]' onClick="this.select();" )
+        tr
+          td &nbsp;
+          td
+            div.info
+              p By creating your own Grassroots fundraising page, you will allow people to sponsor your phonebanking by donating to Bernie's campaign.
+              p
+                a(href='https://secure.berniesanders.com/page/outreach/settings/grassroots-fundraising', target='_blank') Create your personal Grassroots Fundraising Page
+        tr
+          td &nbsp;
+          td
+            button.blue-button Create Team
+      //- default
+      //-   p
+
+//- Third column
+block more

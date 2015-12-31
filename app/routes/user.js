@@ -11,10 +11,8 @@ var User = require('../models/user'),
 // Upload image to s3
 
 var Upload = require('s3-uploader');
-
 var multer  = require('multer')
 var uploader = multer({ dest: '/tmp' })
-
 var s3UserClient = new Upload('www.phonebankduel.com', {
                 aws: {
                   path: 'user/',

@@ -13,6 +13,8 @@ var teamSchema = new Schema({
 
   created_at: {type: Date, default: new Date()},
 
+  fundraising_link: String,
+
   //Ranking ARea
   calls_made: {
     overall: {type: Number, default: 15000},

@@ -1,0 +1,102 @@
+extends ../layout/hero-two-col
+
+//- blank or at least small
+block profile
+  <div class='separator'></div>
+
+//- First column - Submenuss
+block information
+  div#left-col-menus
+    h1 Team Management
+    ul
+      li.left-menu-item
+        a(href='/team/edit', class= currentPage=='/edit' ? "active-link" : "") Team Profile
+      li.left-menu-item
+        a(href='/team/edit/logo', class= currentPage=='/edit/logo' ? "active-link" : "") Change Logo
+      li.left-menu-item
+        a(href='/team/edit/members', class= currentPage=='/edit/members' ? "active-link" : "") Manage Members
+      li.left-menu-item
+        a(href='/team/edit/fundraising', class= currentPage=='/edit/fundraising' ? "active-link" : "") Fundraising
+
+
+//- Second column for various profile items
+block activities
+  div#main-form-content
+    case currentPage
+      when '/edit'
+        form#main-form(action='/user/edit', method='POST')
+          table#profile-area
+            tr#name-area
+              td
+                label Name
+              td
+                input(type='text', name='user[name]', value= user.name)
+            tr#username-area
+              td
+                label Username
+              td
+                input(type='text', name='user[username]', value= user.username)
+            tr.submit
+              td &nbsp;
+              td
+                button(class='blue-button') Update Profile
+      when '/edit/photo'
+        form#main-form(action='/user/edit/photo', method='POST', enctype="multipart/form-data")
+          table#profile-area
+            tr#name-area
+              td
+                img(src= user.photo, width='100px', height='100px')
+              td
+                input(type='file', name='photo')
+            tr.submit
+              td &nbsp;
+              td
+                button(class='blue-button') Upload Photo
+      when '/edit/password'
+        form#main-form(action='/user/edit/password', method='POST')
+          table#account-profile
+            tr
+              td
+                label Old Password
+              td
+                input(type='password', name='user[old_password]')
+            tr
+              td
+                label New Password
+              td
+                input(type='password', name='user[new_password]')
+            tr
+              td
+                label Repeat Password
+              td
+                input(type='password', name='user[repeat_password]')
+            tr.submit
+              td &nbsp;
+              td
+                button(class='blue-button') Change Password
+      when '/edit/fundraising'
+        form#main-form(action='/user/edit/fundraising', method='POST')
+          table#donation-profile
+            tr
+              td
+                label Fundraising Link
+                  sup *
+              td
+                input(type='text' name='user[meta][fundraising_link]'
+                  value= user.meta.fundraising_link onClick="this.select();" )
+            tr
+              td &nbsp;
+              td
+                button(class='blue-button') Update Link
+            tr
+              td &nbsp;
+              td
+                div.info
+                  p * By creating your own Grassroots fundraising page, you will allow people to sponsor your phonebanking by donating to Bernie's campaign.
+                  p
+                    a(href='https://secure.berniesanders.com/page/outreach/settings/grassroots-fundraising', target='_blank') Create your personal Grassroots Fundraising Page
+      default
+        p
+
+//- Third column
+block more
