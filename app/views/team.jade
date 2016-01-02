@@ -58,29 +58,41 @@ block information
           input(type='hidden', name='team[_id]', value= team._id)
           button.blue-button Leave #{team.name}
 
-  //- div.call-to-action
-  //-   a.cta.blue-button(href="#", style='line-height: 1.5') Pledge to Sponsor <br/>Team #{team.name}
-
 block activities
-  ul.activity-list
-    each activity in activities
+  if user && activities.length == 0 && user.team.equals(team._id)
+    div.call-now.highlight
+      h1 Make the first call for your team now!
+        br
+        br
+        h3 <strong>Step 1</strong>:
+          a(href='http://organize.berniesanders.com/', target='blank')&nbsp; Call using the official campaign's Ground Control app
+        br
+        h3 <strong>Step 2</strong>:
+          a(href='https://docs.google.com/forms/d/15zawSuJwEOmeq1ULse6fOLDqK2LNTwBp2RibTfh17vU/viewform', target='blank')&nbsp; Report your calls/texts via Google Spreadsheet.
+        br
+        h5 All calls/texts you make will be added to your team's daily contacts.
 
-      li.activity-item
-        div.action-area.clearfix
-          div.img-area(style="background-image: url(" + activity.icon + ")")
-            a.fill-space
-          div.act
-            p.act-text
-              a.act-actor(href= activity.source.url)= activity.source.label
-              span.act-action= activity.action
-              a.act-recipient(href= activity.target.url)= activity.target.label
-              span.act-time-ago= activity.time_ago
-            p.act-brand
-              each user in activity.users_involved
-                  a(href='/user/' + user.username)
-                    img(src= user.photo, style='width: 30px; height: 30px;')
+  else
+    ul.activity-list
+      each activity in activities
+        li.activity-item
+          div.action-area.clearfix
+            div.img-area(style="background-image: url(" + activity.icon + ")")
+              a.fill-space
+            div.act
+              p.act-text
+                a.act-actor(href= activity.source.url)= activity.source.label
+                span.act-action= activity.action
+                a.act-recipient(href= activity.target.url)= activity.target.label
+                span.act-time-ago= activity.time_ago
+              p.act-brand
+                each user in activity.users_involved
+                    a(href='/user/' + user.username)
+                      img(src= user.photo, style='width: 30px; height: 30px;')
 
 block more
+  div.call-to-action
+    a.cta.blue-button(href= team.fundraising_link, target='_blank', style='line-height: 1; font-size: 12px; margin-top: 30px;') Pledge to Sponsor <br/>Team #{team.name}
   //- div.badges
   //-   ul.badges-list
   //-     - for(var i = 0; i < 2; i ++) {

@@ -285,14 +285,14 @@ router.get('/:username', function(req,res,next) {
           .populate('team')
           .exec(function(err, user) {
             if (err) throw err;
-            req.user = user;
+            req._user = user;
             next();
           });
       })
       .get('/:username', function(req, res, next) {
         // 2 - Get activities
         console.log("Activity");
-        var user= req.user;
+        var user= req._user;
         console.log(user);
         Activity
             .find({users_involved: user._id })
@@ -305,7 +305,7 @@ router.get('/:username', function(req,res,next) {
       })
       .get('/:username', function(req, res, next) {
         // 3 - Get weekly calls and render it properly
-        var user = req.user;
+        var user = req._user;
         req.calls = {};
 
         Call.getCallsThisWeek(user, function(err, calls) {
@@ -321,7 +321,7 @@ router.get('/:username', function(req,res,next) {
         });
       })
       .get('/:username', function(req, res, next) {
-        var user = req.user;
+        var user = req._user;
         Call.getCallsThisMonth(user, function(err, calls) {
 
           var total = 0;
@@ -341,7 +341,8 @@ router.get('/:username', function(req,res,next) {
         res.render('user',
           {
             layout: "profile-layout",
-            user: req.user,
+            user: req._user,
+            loggedIn: req.user,
             activities: req.activities,
             calls: req.calls
           }
