@@ -59,7 +59,7 @@ block information
           button.blue-button Leave #{team.name}
 
 block activities
-  if user && activities.length == 0 && user.team.equals(team._id)
+  if user && activities.length == 0 && user.team && user.team.equals(team._id)
     div.call-now.highlight
       h1 Make the first call for your team now!
         br
