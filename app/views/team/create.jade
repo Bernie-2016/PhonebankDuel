@@ -8,11 +8,8 @@ block information
   div#left-col-menus
     h1 Create Team
     p.help-info By creating a team you will be the mentor for that team.
-    //- ul
-    //-   li.left-menu-item
-    //-     a(href='/team/edit', class= currentPage=='/edit' ? "active-link" : "") Team Profile
-    //-   li.left-menu-item
-    //-     a(href='/team/edit/logo', class= currentPage=='/edit/logo' ? "active-link" : "") Change Logo
+
+    include ../partial/team_setting.jade
     //-   li.left-menu-item
     //-     a(href='/team/edit/members', class= currentPage=='/edit/members' ? "active-link" : "") Manage Members
     //-   li.left-menu-item
@@ -29,11 +26,12 @@ block activities
             label Team Name
           td
             input(type='text', name='team[name]')
-        //- tr#username-area
-        //-   td
-        //-     label Description
-        //-   td
-        //-     input(type='text', name='user[username]' )
+        tr#description-area
+              td
+                label(for='team.description') Description
+                sub max 200 characters
+              td
+                textarea(name='team[description]', id='team.description')
         tr#name-area
           td
             label Team Logo
@@ -64,3 +62,19 @@ block activities
 
 //- Third column
 block more
+  script(src= '/javascripts/jquery-1.11.3.js')
+  script(type='text/javascript').
+    (function($) {
+      $("textarea[id='team.description']").on('keyup', function(e) {
+        var that = $(this);
+        var $sub = $("label[for='team.description'] + sub");
+        var charLeft = 200 - that.val().length;
+
+        if (charLeft < 0) {
+          $sub.addClass('over-limit');
+        } else {
+          $sub.removeClass('over-limit');
+        }
+        $sub.text((200 - that.val().length) + " characters left");
+      });
+    })(jQuery);

@@ -18,7 +18,6 @@ block profile
 
 block information
 
-  //team ranking
   div.info-ranking.clearfix
     h4 Rankings
     div.personal-ranking
@@ -47,7 +46,17 @@ block information
           li.member-item
             a.member(href="/user/" + mem.username)
               img(src= mem.photo)
-
+  //Join team
+  div.join-team
+    if user
+      if !team || !team._id.equals(user.team)
+        form(class='join-team', action='/team/join', method='POST')
+          input(type='hidden', name='team[_id]', value= team._id)
+          button.blue-button Join #{team.name}
+      else
+        form(class='join-team', action='/team/leave', method='POST')
+          input(type='hidden', name='team[_id]', value= team._id)
+          button.blue-button Leave #{team.name}
 
   //- div.call-to-action
   //-   a.cta.blue-button(href="#", style='line-height: 1.5') Pledge to Sponsor <br/>Team #{team.name}

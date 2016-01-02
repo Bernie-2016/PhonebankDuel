@@ -123,6 +123,15 @@ body#profile-layout {
       }
       //end of members list
 
+      //join team
+      .join-team {
+        text-align: center;
+
+        button {
+          width: 80%;
+        }
+      }
+
       // STart of Chart for the last 30 days
       .last-30-days {
         margin-bottom: 25px;

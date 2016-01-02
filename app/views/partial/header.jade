@@ -14,15 +14,23 @@ header.clearfix
             a(href='http://organize.berniesanders.com/', target='_blank') Call for Bernie
           - if ( loggedIn ) {
             li.with-submenu.menu-item.profile
+              span.arrow &#9662;
               a(href="/user/" + _user.username)
                 img(src= _user.photo, width="20px", height="20px")
                 span= _user.username
               ul.submenu
+                li.submenu-item
+                  a(href='https://docs.google.com/forms/d/15zawSuJwEOmeq1ULse6fOLDqK2LNTwBp2RibTfh17vU/viewform', target='_blank') Submit Call
                 if _user.team
                   li.submenu-item
                     a(href='/team') My Team
-                li.submenu-item
-                  a(href='https://docs.google.com/forms/d/15zawSuJwEOmeq1ULse6fOLDqK2LNTwBp2RibTfh17vU/viewform', target='_blank') Submit Call
+                  li.submenu-item
+                    a(href='/team/edit') Team Settings
+                else
+                  li.submenu-item
+                    a(href='/team/create') Start a Team
+                  li.submenu-item
+                    a(href='/team/join') Join a Team
                 li.submenu-item
                   a(href='/user/edit') Edit Profile
                 li.separator

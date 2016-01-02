@@ -6,8 +6,9 @@ var Team = require('../models/team'),
     Call = require('../models/call');
 
 var Upload = require('s3-uploader');
-var multer  = require('multer')
-var uploader = multer({ dest: '/tmp' })
+var multer  = require('multer');
+var uploader = multer({ dest: '/tmp' });
+var TeamServices = require('./services/team-services.js');
 var s3TeamClient = new Upload('www.phonebankduel.com', {
                 aws: {
                   path: 'team/',
@@ -32,13 +33,32 @@ var s3TeamClient = new Upload('www.phonebankduel.com', {
 // Start of Index
 router.get('/', function(req, res, next) {
   if (req.user) { // logged in
-    Team.findById(req.user.team, function(err, team) {
-      req.url = '/' + team.name;
+    if (req.user.team) { // if user has a team
+      Team.findById(req.user.team, function(err, team) {
+        req.url = '/' + team.name;
+        next('route');
+      });
+    } else {
+      req.url = '/join';
       next('route');
-    })
+    }
   } else {
     res.redirect('/');
   }
+
+});
+
+router.get('/join', function(req,res,next) {
+
+  // console.log(req.query);
+  var page = req.query.p || 0;
+
+  Team.find({})
+    .limit(20).skip(page*20)
+    .exec(function(err, teams) {
+      if (err) throw err;
+      res.render('team/list', {layout: 'settings', teams: teams, user: req.user, currentPage: req.url });
+    });
 
 });
 
@@ -55,7 +75,7 @@ router.get('/create', function(req, res, next) {
       if (team) { // he is leading a team
         res.redirect('/team/edit');
       } else {
-        res.render('team/create', { layout: "settings" });
+        res.render('team/create', { layout: "settings", currentPage: req.url });
       }
     });
   } else {
@@ -74,13 +94,13 @@ router.get('/create', function(req, res, next) {
             if (err) { throw err; }
 
             req.photo = versions[0].url;
-            req.user.save(function(err) {
-              if (err) throw err;
+            // req.user.save(function(err) {
+              // if (err) throw err;
 
               next();
               // req.flash('info', 'Photo Updated successfully.');
               // res.redirect('/user/edit/photo');
-            });
+            // });
           });
       }
     } else {
@@ -92,36 +112,70 @@ router.get('/create', function(req, res, next) {
   if (!req.user) { res.redirect('/user/login'); }
   var photo = req.photo;
   var name = req.body.team.name;
+  var description = req.body.team.description;
   var fundraising_link = req.body.team.fundraising_link;
   var user = req.user;
 
-  var team = Team({ name: name, mentor: user._id, fundraising_link: fundraising_link, logo: photo});
+  var team = Team({ name: name, mentor: user._id, fundraising_link: fundraising_link, logo: photo, description: description});
 
-  team.save(function(err) {
+  team.save(function(err, team) {
+
     if (err) {
-      req.flash('error', err);
+      req.flash('error', err.message);
       res.redirect('/team/create');
     }
 
-    res.redirect('/team/' + name);
+    // console.log("Newly saved team:: ", team);
+    req.team = team;
+
+    next();
   });
+})
+.post('/create', function(req, res, next) {
+  // Save team for the user
+  req.user.team = req.team._id;
+  req.user.save(function(err) {
+    if (err) {
+      req.flash('error', err.message);
+      res.redirect('/team/create');
+    }
+
+    res.redirect('/team/' + req.team.name);
+  })
 });
 
-router.get(/edit(\/:type)/, function(req, res, next) {
+router.get(/edit(\/:type)?/, function(req, res, next) {
   // Check if user leads a team. If so, view team, otherwise,
   // have the user create a team.
   var user = req.user;
 
+  var _type = req.params.type || "";
+
   //Check if user is logged in
   if (user) {
     Team.findOne({ mentor: user._id }, function(err, team) {
-      if(type == "members") {
-        // Retrieve members
-        User.find({ team: team._id }, function(err, members) {
-          res.render('team/edit', { user: user, team: team, members: members, layout: "settings"});
-        });
+      if (team) {
+        if(_type == "members") {
+          // Retrieve members
+          User.find({ team: team._id }, function(err, members) {
+            res.render('team/edit', { mentor: true, user: user, team: team, members: members, layout: "settings", currentPage: req.url});
+          });
+        } else {
+          res.render('team/edit', { mentor: true, currentPage: req.url, user: user, team: team, layout: "settings"});
+        }
+      } else if (user.team) {
+        Team.findOne({ _id: user.team }, function(err, team) {
+          if (err) throw err;
+
+          res.render('team/edit', {
+            mentor: false,
+            user: user,
+            team: team,
+            layout: "settings"
+          });
+        })
       } else {
-        res.render('team/edit', { user: user, team: team, layout: "settings"});
+        res.redirect('/team/join');
       }
 
     });
@@ -131,92 +185,24 @@ router.get(/edit(\/:type)/, function(req, res, next) {
 
 });
 
+// TODO: Edit profile and description
+router.post('/edit', TeamServices.edit);
+
+// TODO:  Upload new Logo
+router.post('/edit/logo', uploader.single('photo'), TeamServices.changeLogo);
+
+// TODO:  Manage members
+router.post('/edit/members', function(req, res, next) {});
+
+router.post('/join', TeamServices.joinTeam);
+
+router.post('/leave', TeamServices.leaveTeam);
+
+// TODO:  Edit fundraising links
+router.post('/edit/fundraising', TeamServices.updateFundraising);
+
 // * get current user's team, otherwise, go to homepage
-router.get('/:teamname', function(req, res, next) {
-    //1 - get Team target
-    Team
-      .findOne({ name: req.params.teamname })
-      .populate('mentor')
-      .exec(function(err, team) {
-        if (err) throw err;
-
-        req.team = team;
-        next();
-        // next();
-      });
-  })
-  .get('/:teamname', function(req, res, next) {
-      // 2 - Get members
-      var team = req.team;
-      User.
-        find({
-          team: team._id
-        }).exec(function(err, users) {
-          req.members = users;
-          next();
-        });
-  })
-  .get('/:teamname', function(req, res, next) {
-      // 3 - Get activities
-      var team= req.team;
-      Activity
-          .find({teams_involved: team._id })
-          .populate('teams_involved users_involved')
-          .sort({ 'activity_date': -1 })
-          .exec(function(err, activities) {
-            req.activities = activities;
-            next();
-          });
-  })
-  .get('/:teamname', function(req, res, next) {
-    // 3 - Get weekly calls and render it properly
-    var team = req.team;
-    req.calls = {};
-
-    Call.getCallsThisWeek(team, function(err, calls) {
-
-      var total = 0;
-      for (var i = 0; i < calls.length; i ++ ) {
-        total += calls[i].count;
-      }
-      req.calls.weeklyCount =
-        total < 10000 ? total : numeral(total).format('0.0a').replace(".0", "");
-
-
-      req.calls.weekly = JSON.stringify(calls);
-      next();
-    });
-  })
-  .get('/:teamname', function(req, res, next) {
-    var team = req.team;
-    Call.getCallsThisMonth(team, function(err, calls) {
-
-      //Prep for C3 use
-      var total = 0;
-      for (var i = 0; i < calls.length; i ++ ) {
-        total += calls[i].count;
-      }
-      req.calls.monthlyCount =
-        total < 10000 ? total : numeral(total).format('0.0a').replace(".0", "");
-
-      req.calls.monthly = JSON.stringify(calls);
-      next();
-    });
-  })
-  .get('/:teamname', function(req, res, next) {
-    // 4 - Render user page
-    console.log(req.activities);
-    res.render('team',
-      {
-        layout: "profile-layout",
-        team: req.team,
-        activities: req.activities,
-        calls: req.calls,
-        members: req.members
-      }
-    );
-
-  });
+router.get('/:teamname', TeamServices.showTeam);
 // End of index
 
 module.exports = router;

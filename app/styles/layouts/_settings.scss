@@ -18,12 +18,20 @@ body#settings {
           font-weight: 300;
           margin-bottom: 25px;
         }
+        h5 {
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          font-size: 19px;
+          color: gray;
+          margin-bottom: 30px;
+        }
         p.help-info {
 
           color: lightgray;
           line-height: 1.5;
           width: 70%;
           float: right;
+          margin-bottom: 40px;
 
         }
         ul {
@@ -52,6 +60,33 @@ body#settings {
         float: left;
         margin-top: 90px;
 
+        #list-of-team {
+          width: 480px;
+          li.team-to-join {
+            div.team-info,
+            img.team-logo { float: left; }
+          }
+
+          li.team-to-join {
+            padding: 10px 10px 10px;
+            border: 1px solid lightgray;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            div.team-info {
+              margin-left: 10px;
+
+              h3, p {
+                margin-bottom: 5px;
+              }
+
+              button.blue-button, a.blue-button {
+                font-size: 12px;
+                padding: 6px 10px;
+              }
+            }
+          }
+        }
+
         table {
           tr {
             td {
@@ -63,8 +98,15 @@ body#settings {
                 font-weight: 300px;
                 vertical-align: middle;
                 margin-bottom: 10px;
+
+                & + sub {
+                  float: right;
+                  color: gray;
+
+                  &.over-limit, &.error { color: red; }
+                }
               }
-              input[type=text],input[type=password] {
+              input[type=text],input[type=password], textarea {
 
                 margin-left: 20px;
                 vertical-align: middle;
@@ -74,6 +116,8 @@ body#settings {
                 margin-bottom: 10px;
 
               }
+
+              textarea { height: 100px; }
 
               &.photo-column {
 

@@ -8,6 +8,7 @@ var commandCenter = require('./commandcenter');
 var rankPage = require('./rank');
 
 var User = require('../models/user');
+var Team = require('../models/team');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -19,6 +20,14 @@ router.get('/', function(req, res, next) {
     req.url = '/user/' + req.user.username;
     next('route');
   }
+});
+
+
+router.get('/t/:id', function(req, res, next) {
+  Team.findOne({ _id: req.params.id }, function(err, team) {
+    req.url = '/team/' + team.name;
+    next('route');
+  });
 });
 
 // Defining Routes

@@ -1,0 +1,42 @@
+extends ../layout/hero-two-col
+
+//- blank or at least small
+block profile
+
+//- First column - Submenuss
+block information
+  div#left-col-menus
+    h1 Join Team
+    p.help-info Choose a team to call with
+
+    include ../partial/team_setting.jade
+    //-   li.left-menu-item
+    //-     a(href='/team/edit/members', class= currentPage=='/edit/members' ? "active-link" : "") Manage Members
+    //-   li.left-menu-item
+    //-     a(href='/team/edit/fundraising', class= currentPage=='/edit/fundraising' ? "active-link" : "") Fundraising
+
+
+//- Second column for various profile items
+block activities
+  div#main-form-content
+    ul#list-of-team
+      each team in teams
+        li.team-to-join.clearfix
+          img.team-logo(src= team.logo, width="70px", height="70px")
+          div.team-info
+            h3
+              a(href= '/team/' + team.name)= team.name
+            p= team.description
+            if !team || !team._id.equals(user.team)
+              form(class='join-team', action='/team/join', method='POST')
+                input(type='hidden', name='team[_id]', value= team._id)
+                button.blue-button Join
+            else if team._id.equals(user.team)
+              form(class='join-team', action='/team/leave', method='POST')
+                input(type='hidden', name='team[_id]', value= team._id)
+                button.blue-button Leave
+                span &nbsp;&nbsp; Current Team
+
+
+//- Third column
+block more

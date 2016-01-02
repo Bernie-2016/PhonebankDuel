@@ -7,6 +7,7 @@ var User = require('./user');
 
 var teamSchema = new Schema({
   name: {type: String, unique: true},
+  description: {type: String, maxlength: [200, "Description cannot have more than 200 characters"]},
   mentor: {type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true},
   members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   logo: {type: String, default: '/images/profile.jpg'},

@@ -132,7 +132,8 @@ app.get('*',function(req,res, next) {
     res.locals._user = {
       username: req.user.username,
       name: req.user.name,
-      photo: req.user.photo
+      photo: req.user.photo,
+      team: req.user.team
     };
   }
   next();
