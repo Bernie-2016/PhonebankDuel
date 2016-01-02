@@ -92,7 +92,8 @@ block activities
 
 block more
   div.call-to-action
-    a.cta.blue-button(href= team.fundraising_link, target='_blank', style='line-height: 1; font-size: 12px; margin-top: 30px;') Pledge to Sponsor <br/>Team #{team.name}
+    if team.fundraising_link
+      a.cta.blue-button(href= team.fundraising_link, target='_blank', style='line-height: 1; font-size: 12px; margin-top: 30px;') Pledge to Sponsor <br/>Team #{team.name}
   //- div.badges
   //-   ul.badges-list
   //-     - for(var i = 0; i < 2; i ++) {
