@@ -1,0 +1,80 @@
+body {
+  div.lightbox {
+
+    @include compat('transition', 'opacity 0.2s, z-index 0.2s');
+
+    opacity: 0;
+    z-index: -1;
+
+    &.show-lightbox {
+      z-index: 100;
+      opacity: 1;
+    }
+
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+
+    div.lb-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+
+      div.lb-overlay {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0,0,0,0.6);
+
+        z-index: 150;
+      }
+
+      div.lb-content {
+        h5.error {
+          color: white;
+          background: red;
+          position: absolute;
+          padding: 4px 10px;
+          width: calc(90% + 9px);
+          left: 50%;
+          transform: translate(-50%, 0);
+          top: 40px;
+        }
+        h1 {
+          text-align: left;
+          margin-bottom: 20px;
+          background-color: $bernieblue;
+          color: white;
+          padding: 20px 30px 15px;
+          margin: -30px -34px 20px;
+          border-radius: 15px 15px 0 0;
+
+          + sub {
+            text-align: left;
+            color: lightgray;
+            float: left;
+            margin-bottom: 20px;
+          }
+        }
+
+        position: absolute;
+        z-index: 200;
+        width: 54%;
+        left: 50%;
+        top: 30px;
+        @include compat(transform, translate(-50%, 0));
+        height: auto;
+        overflow: visible;
+        background-color: white;
+        border: 14px solid whitesmoke;
+        border-radius: 15px;
+        padding: 15px 20px 0;
+        margin-bottom: 10px;
+      }
+    }
+  }
+}

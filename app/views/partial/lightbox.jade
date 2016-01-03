@@ -1,0 +1,117 @@
+//- Create Call In submission
+div.lightbox#call-in(ng-app='CallSubmitApp' ng-controller='CallSubmitController as call' ng-init="call.count=0; call.texts=0")
+  div.lb-container
+    div.lb-overlay(ng-click='call.hideForm()')
+    div.lb-content
+      div.lb-viewport
+        h1 Submit Call Report
+        sub Information about calls you've made for a certain period. This will be added to your total as well as your team's.
+
+        h5.error(ng-show='call.error.length') {{call.error}}
+
+        form(action='/call/submit', method='POST', novalidate, id='callFormSubmit', ng-submit='call.submitForm($event)')
+          table.form-table
+            tbody
+              tr
+                td
+                  label How many calls did you make?
+                td
+                  input(type='number', name='call[count]', value="0", min=0,  placeholder="# calls made", ng-model='call.count')
+              tr
+                td
+                  label How many texts did you send?
+                td
+                  input(type='number', name='call[texts]', value="0", min=0, placeholder="# texts sent", ng-model='call.texts')
+              tr
+                td
+                  label How was your phonebanking experience?
+                  sub(ng-class= "call.descClass")= "{{call.remainingCharsDescription()}}"
+                td
+                  textarea(name='call[description]', ng-model='call.description')
+              tr
+                td
+                  label Any tips for fellow callers?
+                  sub(ng-class= "call.tipsClass")= "{{ call.remainingCharsTips() }}"
+                td
+                  textarea(name='call[tips]', ng-model='call.tips')
+              tr.submit
+                td &nbsp;
+                td
+                  button(type='submit').blue-button Submit report
+                  a(href='javascript: void(null)' ng-click='call.hideForm()') Cancel
+
+script(type='text/javascript').
+  (function(angular) {
+    var callSubmitApp = angular.module('CallSubmitApp', []);
+
+    //declare controller
+    callSubmitApp.controller('CallSubmitController', function() {
+      this.description = "";
+      this.tips = "";
+      this.count = '0';
+      this.texts = '0';
+      this.error = '';
+
+      this.descClass= '';
+      this.textClass= '';
+      this.callClass= '';
+
+      this.reset = function() {
+        this.description = "";
+        this.tips = "";
+        this.count = '0';
+        this.texts = '0';
+      };
+
+      this.remainingCharsDescription = function() {
+        if (this.description.length == 0) {
+
+         return "Max 500 Characters";
+        }
+        else {
+          if (this.description.length > 500) this.descClass = 'over-limit';
+          else this.descClass = '';
+
+          return (500 - this.description.length) +  " Characters left";
+        }
+      };
+
+      this.remainingCharsTips = function() {
+        if (this.tips.length == 0) return "Max 500 Characters";
+        else {
+          if (this.tips.length > 500) this.tipsClass = 'over-limit';
+          else this.tipsClass = '';
+
+          return (500 - this.tips.length) + " Characters left";
+        }
+      };
+
+      this.hideForm = function() {
+        this.reset();
+        $("#call-in").removeClass("show-lightbox");
+      }
+
+
+      this.submitForm = function($event) {
+        this.error = "";
+        console.log(this.count, this.texts);
+        if ( this.count == 0 && this.texts== 0) {
+          this.error = "At least one Call or Text is needed before you can report it.";
+          $event.preventDefault();
+          return false
+        } else if (this.tips.length > 500 || this.description.length > 500) {
+          this.error = "Tips and descriptions should only have a maximum of 500 characters";
+          $event.preventDefault();
+          return false;
+        } else {
+          this.error = "";
+          return true;
+        }
+      };
+
+    });
+
+  })(window.angular);
+
+
+

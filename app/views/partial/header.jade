@@ -20,7 +20,7 @@ header.clearfix
                 span= _user.username
               ul.submenu
                 li.submenu-item
-                  a(href='https://docs.google.com/forms/d/15zawSuJwEOmeq1ULse6fOLDqK2LNTwBp2RibTfh17vU/viewform', target='_blank') Submit Call
+                  a(href='javascript: void(null)', target='_blank', onclick="$('#call-in').addClass('show-lightbox'); $(this).closest('li.with-submenu').trigger('mouseout');") Submit Call
                 if _user.team
                   li.submenu-item
                     a(href='/team') My Team

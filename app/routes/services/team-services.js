@@ -249,6 +249,7 @@ module.exports = {
       var total = 0;
       for (var i = 0; i < calls.length; i ++ ) {
         total += calls[i].count;
+        total += calls[i].texts;
       }
       req.calls.weeklyCount =
         total < 10000 ? total : numeral(total).format('0.0a').replace(".0", "");
@@ -267,6 +268,7 @@ module.exports = {
       var total = 0;
       for (var i = 0; i < calls.length; i ++ ) {
         total += calls[i].count;
+        total += calls[i].texts;
       }
       req.calls.monthlyCount =
         total < 10000 ? total : numeral(total).format('0.0a').replace(".0", "");

@@ -15,7 +15,10 @@ var callSchema = new Schema({
       assignment: String,
       user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
-      count: { type: Number, default: 1 }
+      count: { type: Number, default: 0 },
+      texts: { type: Number, default: 0 },
+      tips: String,
+      description: String
     },
     { collection : 'Call' });
 
@@ -34,7 +37,8 @@ callSchema.statics.getTopTeamThisWeek = function(callback) {
           _id: {
             team: "$team",
           },
-          count: { $sum: "$count" }
+          count: { $sum: "$count" },
+          texts: { $sum: "$texts" },
         }
       }
       // { $project: { user: 1, _id: 0 }}
@@ -70,7 +74,8 @@ callSchema.statics.getTopUserThisWeek = function(callback) {
           _id: {
             user: "$user",
           },
-          count: { $sum: "$count" }
+          count: { $sum: "$count" },
+          texts: { $sum: "$texts" },
         }
       }
       // { $project: { user: 1, _id: 0 }}
@@ -107,7 +112,8 @@ callSchema.statics.getTopTeamOverall = function(callback) {
           _id: {
             team: "$team",
           },
-          count: { $sum: "$count" }
+          count: { $sum: "$count" },
+          texts: { $sum: "$texts" },
         }
       }
       // { $project: { user: 1, _id: 0 }}
@@ -146,7 +152,8 @@ callSchema.statics.getTopUserOverall = function(callback) {
           _id: {
             user: "$user",
           },
-          count: { $sum: "$count" }
+          count: { $sum: "$count" },
+          texts: { $sum: "$texts" },
         }
       }
       // { $project: { user: 1, _id: 0 }}
@@ -192,7 +199,8 @@ callSchema.statics.getCallsThisWeek = function(target, callback) {
           _id: {
             $dateToString: { format: '%Y-%m-%d', date: "$call_time" },
           },
-          count: { $sum: "$count" }
+          count: { $sum: "$count" },
+          texts: { $sum: "$texts" },
         }
       }])
     .sort({ '_id' : 1 })
@@ -239,7 +247,8 @@ callSchema.statics.getCallsThisMonth = function(target, callback) {
           _id: {
             $dateToString: { format: '%Y-%m-%d', date: "$call_time" },
           },
-          count: { $sum: "$count" }
+          count: { $sum: "$count" },
+          texts: { $sum: "$texts" },
         }
       }])
     .sort({ '_id' : 1 })

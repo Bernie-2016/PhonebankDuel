@@ -6,6 +6,7 @@ var teamPage = require('./team');
 var matchPage = require('./match');
 var commandCenter = require('./commandcenter');
 var rankPage = require('./rank');
+var callServices = require('./call');
 
 var User = require('../models/user');
 var Team = require('../models/team');
@@ -36,5 +37,6 @@ router.use('/team', teamPage);
 router.use('/match', matchPage);
 router.use('/cc', commandCenter);
 router.use('/rank', rankPage);
+router.use('/call', callServices);
 
 module.exports = router;

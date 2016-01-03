@@ -4,8 +4,98 @@ html,body {
   text-align: center;
   font-family: 'Lato', sans-serif;
 
-  // Start of div.flash
 
+  //Start of form-tables
+  table.form-table {
+    tr {
+      td {
+        label {
+          display: inline-block;
+          width: 100%;
+          text-align: right;
+          font-size: 24px;
+          font-weight: 300px;
+          vertical-align: middle;
+          margin-bottom: 10px;
+
+          & + sub {
+            float: right;
+            color: gray;
+
+            &.over-limit, &.error { color: red; }
+          }
+        }
+        input[type=text],input[type=password], input[type=number], textarea {
+
+          margin-left: 20px;
+          vertical-align: middle;
+          padding: 5px;
+          font-size: 24px;
+          width: 300px;
+          margin-bottom: 10px;
+
+        }
+
+        textarea { height: 100px; }
+
+        &.photo-column {
+
+          vertical-align: top;
+
+          div.photo-area {
+            background-color: white;
+            width: 100px;
+            height: 100px;
+            position: relative;
+            background-size: 90px 90px;
+            background-position: center center;
+            background-repeat: no-repeat;
+            border: 1px solid lightgray;
+            margin-left: 19px;
+
+            img.photo-icon {
+
+              opacity: 0;
+              width: 50px;
+              position: absolute;
+              height: 50px;
+              bottom: 0px;
+              right: 5px;
+
+              // transform: translate(-50%, -50%);
+
+            }
+            input[type=file].hidden {
+              position: absolute;
+              // opacity: 0;
+              // width: 100px;
+              // height: 100px;
+              z-index: 1000;
+              cursor: pointer;
+              left: 110px;
+              top: 0px;
+            }
+          }
+        }
+
+        button.blue-button {
+           margin: 20px;
+        }
+
+        div.info {
+          margin-top: 0px;
+          width: 360px;
+          font-size: 14px;
+          padding: 20px;
+          background-color: #EAEAEA;
+          margin-left: 20px;
+        }
+      }
+    }
+  } // end of form-table
+
+
+  // Start of div.flash
   div.flash {
     padding: 10px 5px;
     font-weight: 600;
@@ -64,7 +154,7 @@ html,body {
               width: 150px;
               right: 0;
 
-              z-index: 1000;
+              z-index: 50;
 
               li.separator {
                 width: 100%;

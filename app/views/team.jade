@@ -11,12 +11,17 @@ block profile
       div.call-counters.clearfix
         div.call-count
           .hero= calls.monthlyCount
-          div Calls Made
+          div Calls & Texts Made
           div This month
           //- div since Jul 2015
         div#monthly-chart.call-chart
 
 block information
+  if team.description
+    div.about-team
+      h4 About #{team.name}
+      div.decription
+        p= team.description
 
   div.info-ranking.clearfix
     h4 Rankings
@@ -35,7 +40,7 @@ block information
     div.weekly-calls.clearfix
       h5
         div.hero= calls.weeklyCount
-        div Calls Made
+        div Calls and texts Made
       div#weekly-calls
 
   //list of all members
@@ -68,7 +73,7 @@ block activities
           a(href='http://organize.berniesanders.com/', target='blank')&nbsp; Call using the official campaign's Ground Control app
         br
         h3 <strong>Step 2</strong>:
-          a(href='https://docs.google.com/forms/d/15zawSuJwEOmeq1ULse6fOLDqK2LNTwBp2RibTfh17vU/viewform', target='blank')&nbsp; Report your calls/texts via Google Forms.
+          a(href='javascript: void(null)', onclick="$('#call-in').addClass('show-lightbox'); $(this).closest('li.with-submenu').trigger('mouseout');")&nbsp; Report your calls/texts here. Hover over your profile name (top right), and click on "Submit Call"
         br
         h5 All calls/texts you make will be added to your team's daily contacts.
 
@@ -119,9 +124,11 @@ block scripts
           x: 'date',
           columns: [
             ['date'].concat(window.weeklyData.map(function(i){ return i._id})),
-            ['calls'].concat(window.weeklyData.map(function(i){ return i.count}))
+            ['calls'].concat(window.weeklyData.map(function(i){ return i.count})),
+            ['texts'].concat(window.monthlyData.map(function(i){ return i.texts}))
           ],
-          type: 'bar'
+          type: 'bar',
+          groups: [['calls', 'texts']]
         },
         legend:{ show: false },
         axis: {
@@ -146,9 +153,11 @@ block scripts
           x: 'date',
           columns: [
             ['date'].concat(window.monthlyData.map(function(i){ return i._id})),
-            ['calls'].concat(window.monthlyData.map(function(i){ return i.count}))
+            ['calls'].concat(window.monthlyData.map(function(i){ return i.count})),
+            ['texts'].concat(window.monthlyData.map(function(i){ return i.texts}))
           ],
-          type: 'bar'
+          type: 'bar',
+          groups: [['calls', 'texts']]
         },
         legend:{ show: false },
         axis: {

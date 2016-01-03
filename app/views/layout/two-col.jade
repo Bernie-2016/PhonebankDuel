@@ -19,7 +19,13 @@ html
 
       include ../partial/footer.jade
 
-    script(src='/javascripts/d3.js', type='text/javascript')
-    script(src='/javascripts/c3.js', type='text/javascript')
+    include ../partial/js_libs.jade
+    include ../partial/lightbox.jade
 
     block script_content
+
+
+//- extends ../partial/lightbox
+//-   block lb_content
+//-     div
+//-       h1 goodbye world

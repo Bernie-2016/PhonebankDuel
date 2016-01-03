@@ -312,6 +312,7 @@ router.get('/:username', function(req,res,next) {
           var total = 0;
           for (var i = 0; i < calls.length; i ++ ) {
             total += calls[i].count;
+            total += calls[i].texts;
           }
           console.log(total);
           req.calls.weeklyCount =
@@ -327,6 +328,7 @@ router.get('/:username', function(req,res,next) {
           var total = 0;
           for (var i = 0; i < calls.length; i ++ ) {
             total += calls[i].count;
+            total += calls[i].texts;
           }
           //Prep for C3 use
           req.calls.monthlyCount =
