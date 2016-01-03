@@ -112,7 +112,8 @@ var saveActivities = function(callback) {
     .findOne()
     .sort({ call_time: -1 })
     .exec(function(err, call) {
-      var currentDate = call ? call.call_time : moment().subtract(365, 'days')._d;
+      // var currentDate = call ? call.call_time : moment().subtract(365, 'days')._d;
+      var currentDate = new Date("2015-12-31T00:16:28Z");
         //Create Users if needed
         async.eachSeries(json.result, function(callReport, callback) {
 
