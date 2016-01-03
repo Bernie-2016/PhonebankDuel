@@ -118,6 +118,7 @@ block scripts
   script(type='text/javascript').
     window.pageFactory = (function(){
       // Arrange weekly data
+      if (window.weeklyData.length > 0)
       c3.generate({
         bindto: '#weekly-calls',
         data: {
@@ -147,6 +148,7 @@ block scripts
       });
 
       //Weekly dAta
+      if (window.monthlyData.length > 0)
       c3.generate({
         bindto: '#monthly-chart',
         data: {
