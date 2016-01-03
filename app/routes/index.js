@@ -31,6 +31,16 @@ router.get('/t/:id', function(req, res, next) {
   });
 });
 
+router.get("/j/:team_id?", function(req, res, next) {
+  if (req.params.team_id) {
+    req.url = "/user/register/" + req.params.team_id;
+    next('route');
+  } else {
+    req.url = "/user/register";
+    next('route');
+  }
+});
+
 // Defining Routes
 router.use('/user', userPage);
 router.use('/team', teamPage);

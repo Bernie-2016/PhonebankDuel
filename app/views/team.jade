@@ -51,6 +51,11 @@ block information
           li.member-item
             a.member(href="/user/" + mem.username)
               img(src= mem.photo)
+  div.member-list-area
+    h4(style='margin-bottom: 4px;') Invite others to join
+    input(type='text', value='http://www.phonebankduel.com/j/' + team.short_id,
+            onclick='this.select()')
+
   //Join team
   div.join-team
     if user

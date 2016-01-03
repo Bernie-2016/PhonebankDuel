@@ -106,7 +106,12 @@ body#profile-layout {
 
       //start of members list
       .member-list-area {
-        margin-bottom: 20px;
+        margin-bottom: 40px;
+        input[type=text] {
+          width: 90%;
+          font-size: 14px;
+          padding: 8px;
+        }
         ul {
           margin-top: 10px;
           li {
