@@ -22,6 +22,47 @@ body#hero-layout {
 
       }
 
+      //start of team registration
+      .team-registration {
+
+        background-color: white;
+        border: 3px solid whitesmoke;
+        border-radius: 4px;
+        margin-top: 20px;
+        width: 100%;
+
+        & + sub {
+          font-size: 11px;
+          display: inline-block;
+          margin-top: 10px;
+          margin-bottom: 10px;
+          padding: 0 10px;
+        }
+
+        img {
+          width:  60px;
+          float: left;
+        }
+        div.team-blurb {
+          float: left;
+          width: 300px;
+          h5 {
+            font-weight: 300;
+            text-transform: uppercase;
+            font-size: 12px;
+            margin-top: 4px;
+          }
+
+          h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 4px;
+            color: #333333;
+          }
+        }
+      }
+      //end of team registration
+
       // Start of Form
       div.form-area {
         position: absolute;

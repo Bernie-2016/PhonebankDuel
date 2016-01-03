@@ -96,6 +96,15 @@ block activities
                       img(src= user.photo, style='width: 30px; height: 30px;')
 
 block more
+  div.slack-to-action
+    a(href='https://docs.google.com/forms/d/1TMrM4xFagI7SqzSD5qr2VPGUlV9jopisNOnecYq9Cgc/edit?usp=forms_home', target='blank')
+      img(src='/images/slack.png', width='100%', height='auto')
+    a(href='https://docs.google.com/forms/d/1TMrM4xFagI7SqzSD5qr2VPGUlV9jopisNOnecYq9Cgc/edit?usp=forms_home', target='blank')
+      span
+        strong Join The Call Team Slack
+    p Join the growing community of volunteers who are reaching out to other volunteers and early states by phone.
+    a(href='https://docs.google.com/forms/d/1TMrM4xFagI7SqzSD5qr2VPGUlV9jopisNOnecYq9Cgc/edit?usp=forms_home', target='blank').blue-button Join
+
   div.call-to-action
     if team.fundraising_link
       a.cta.blue-button(href= team.fundraising_link, target='_blank', style='line-height: 1; font-size: 12px; margin-top: 30px;') Pledge to Sponsor <br/>Team #{team.name}

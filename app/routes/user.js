@@ -6,7 +6,8 @@ var router = express.Router();
 
 var User = require('../models/user'),
     Activity = require('../models/activity'),
-    Call = require('../models/call');
+    Call = require('../models/call'),
+    Team = require('../models/team');
 
 // Upload image to s3
 
@@ -48,18 +49,27 @@ router.route('/login')
   *
   * START of registration
   */
-router.route('/register')
-  .get(function(req,res,next) {
+router.get("/register/:team_id?", function(req,res,next) {
     // Check if user is already logged in first!
     //Render registration page here
     if ( req.user ) {
       res.redirect('/');
     } else {
-      // If there's no session, go to registration page
-      res.render('user/register');
+      var team_id = req.params.team_id;
+
+      if (team_id) {
+        Team.findOne({short_id: team_id}, function(err, team) {
+          if (err) throw err;
+          res.render('user/register', { team: team });
+        })
+      } else {
+        // If there's no session, go to registration page
+        res.render('user/register');
+      }
     }
-  })
-  .post(function(req,res,next) {
+  });
+
+router.post('/register', function(req,res,next) {
     // Render Registration page from here
     var userParam = req.body.user;
 
@@ -90,7 +100,7 @@ router.route('/register')
       // next();
     });
   })
-  .post(function(req, res, next) {
+  .post('/register', function(req, res, next) {
     //2. Save Iser!
     var newUser = new User(req.body.user);
     // newUser.password = req.body.user.password;
@@ -133,7 +143,7 @@ router.route('/register')
     }
 
   })
-  .post(function(req,res,next) {
+  .post("/register", function(req,res,next) {
     //3. Send confirmation email
     var user = req.user;
 

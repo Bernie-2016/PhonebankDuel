@@ -4,10 +4,12 @@ var numeral = require('numeral');
 var moment = require('moment');
 //Dependencies
 var User = require('./user');
+var shortid = require('shortid');
 
 var teamSchema = new Schema({
   name: {type: String, unique: true},
   description: {type: String, maxlength: [200, "Description cannot have more than 200 characters"]},
+  short_id: {type: String, unique: true, default: shortid.generate },
   mentor: {type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true},
   members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   logo: {type: String, default: '/images/profile.jpg'},

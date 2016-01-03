@@ -8,7 +8,20 @@ block hero_content
       span &nbsp;or&nbsp;
       a(href='/user/login') Login
 
+    if team
+      div.team-registration.clearfix
+        img(src= team.logo)
+        div.team-blurb
+          h5 You are joining
+          h3 Team #{team.name}
+          p= team.description
+
+      sub By registering you will automatically join Team #{team.name}. To register without a team, go to <a href='/user/registration'>basic Registration Page</a>
+
+
     form.form-proper(method="POST",action='/user/register')
+      if team
+        input(type='hidden', name='user[team]', value=team._id)
       table
         tr.name-area
           td
