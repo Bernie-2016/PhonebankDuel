@@ -67,6 +67,8 @@ block information
         form(class='join-team', action='/team/leave', method='POST')
           input(type='hidden', name='team[_id]', value= team._id)
           button.blue-button Leave #{team.name}
+    else
+      a(href='/j/' + team.short_id).blue-button.join-team Join #{team.name}
 
 block activities
   if user && activities.length == 0 && user.team && user.team.equals(team._id)
