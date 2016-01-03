@@ -230,12 +230,12 @@ callSchema.statics.getCallsThisMonth = function(target, callback) {
   var match = {};
   if ( target instanceof User) {
     match = {$match: {
-                // call_time: { $gt: moment().subtract(30, 'days')._d },
+                call_time: { $gt: moment().subtract(30, 'days')._d },
                 user: target._id
             }};
   } else if ( target instanceof Team) {
     match = {$match: {
-                // call_time: { $gt: moment().subtract(30, 'days')._d },
+                call_time: { $gt: moment().subtract(30, 'days')._d },
                 team: target._id
             }};
   }
