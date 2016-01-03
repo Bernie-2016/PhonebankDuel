@@ -107,7 +107,7 @@ block scripts
           columns: [
             ['date'].concat(window.weeklyData.map(function(i){ return i._id})),
             ['calls'].concat(window.weeklyData.map(function(i){ return i.count})),
-            ['texts'].concat(window.weeklyData.map(function(i){ return i.texts}))
+            ['texts'].concat(window.weeklyData.map(function(i){ return i.texts ? i.texts : 0}))
           ],
           type: 'bar',
           groups:[['calls', 'texts']],
@@ -136,7 +136,7 @@ block scripts
           columns: [
             ['date'].concat(window.monthlyData.map(function(i){ return i._id})),
             ['calls'].concat(window.monthlyData.map(function(i){ return i.count})),
-            ['texts'].concat(window.monthlyData.map(function(i){ return i.texts}))
+            ['texts'].concat(window.monthlyData.map(function(i){ return i.texts ? i.texts : 0}))
           ],
           type: 'bar',
           groups:[['calls', 'texts']],
