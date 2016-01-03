@@ -52,19 +52,7 @@ block information
 
 block activities
   if loggedIn && user._id.equals(loggedIn._id) && activities == 0
-    div.call-now.highlight
-      h1 Make your first call now!
-        br
-        br
-        h3 <strong>Step 0</strong>: Check out <a href='https://docs.google.com/document/d/14lWdOdMRJVfP8VPouz47SOOtLXlGOzxxcmNwVWDyM6s/edit?usp=drivesdk' target='_blank'>this guide</a> to learn about phonebanking and why we are doing this phonebank.
-        br
-        h3 <strong>Step 1</strong>:
-          a(href='http://organize.berniesanders.com/', target='blank')&nbsp; Call using the official campaign's Ground Control app
-        br
-        h3 <strong>Step 2</strong>:
-          a(href='javascript: void(null)', onclick="$('#call-in').addClass('show-lightbox'); $(this).closest('li.with-submenu').trigger('mouseout');")&nbsp; Report your calls/texts here. Hover over your profile name (top right), and click on "Report-In"
-        br
-        h5 All calls/texts you make will be added to your daily totals.
+    include ./partial/first_time.jade
   else
     ul.activity-list
       each activity in activities
