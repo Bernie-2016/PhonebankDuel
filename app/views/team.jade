@@ -5,7 +5,7 @@ block profile
     div.profile-img
       img(src= team.logo)
     div.profile-name-status
-      h1 Team #{team.name} (#{members.length} Members)
+      h1 Team #{team.name} (#{members.length == 1 ? members.length + " Member" : members.length + " Members"})
       h3 Mentor:&nbsp;
         a(href= "/user/" + team.mentor.username)= team.mentor.username
       div.call-counters.clearfix
@@ -45,7 +45,7 @@ block information
 
   //list of all members
   div.member-list-area
-    h4 Members (#{members.length})
+    h4 Members (#{members.length == 1 ? members.length + " Member" : members.length + " Members"})
       ul.member-list
         each mem in members
           li.member-item
@@ -83,7 +83,10 @@ block activities
               a.fill-space
             div.act
               p.act-text
-                a.act-actor(href= activity.source.url)= activity.source.label
+                if activity.source.label
+                  a.act-actor(href= activity.source.url)= activity.source.label || "A member of Team"+team.name
+                else
+                  span.act-actor(href= "javascript: void(null);")=  "A member of Team "+team.name
                 span.act-action= activity.action
                 a.act-recipient(href= activity.target.url)= activity.target.label
                 span.act-time-ago= activity.time_ago
