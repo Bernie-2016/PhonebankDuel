@@ -273,6 +273,16 @@ body#profile-layout {
                 .act-action { font-weight: 600; }
                 .act-time-ago { color: lightgray; font-size: 12px; vertical-align: bottom; word-wrap: normal; white-space: nowrap; }
 
+                q {
+                  display: block;
+                  margin-bottom: 10px;
+
+                  & + sub {
+                    font-weight: 300;
+                    color: gray;
+                  }
+                }
+
                 &.act-brand {
                   margin-top: 5px;
                 }
