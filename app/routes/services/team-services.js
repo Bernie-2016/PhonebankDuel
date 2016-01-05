@@ -5,6 +5,7 @@ var Activity = require('../../models/activity.js');
 var express = require('express');
 var Upload = require('s3-uploader');
 var multer  = require('multer');
+var numeral = require('numeral');
 var uploader = multer({ dest: '/tmp' });
 var s3TeamClient = new Upload('www.phonebankduel.com', {
                 aws: {
