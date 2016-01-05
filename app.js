@@ -12,7 +12,7 @@ var bodyParser = require('body-parser');
 var __MONGO_URL__ =
   process.env.MONGOLAB_URI ||
   process.env.MONGOHQ_URL ||
-  'mongodb://localhost/phonebankduel';
+  'mongodb://localhost/pbd';
 
 var __PORT__ = process.env.PORT || 5000;
 

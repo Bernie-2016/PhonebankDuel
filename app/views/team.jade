@@ -75,9 +75,9 @@ block activities
     include partial/first_time.jade
 
   else
-    ul.activity-list
+    ul.activity-list.team-activity-list
       each activity in activities
-        li.activity-item
+        li.activity-item.team-activity-item
           div.action-area.clearfix
             div.img-area(style="background-image: url(" + activity.icon + ")")
               a.fill-space
@@ -92,8 +92,9 @@ block activities
                 span.act-time-ago= activity.time_ago
               p.act-brand
                 each user in activity.users_involved
-                    a(href='/user/' + user.username)
-                      img(src= user.photo, style='width: 30px; height: 30px;')
+                  a(href='/user/' + user.username)
+                    img(src= user.photo, style='width: 30px; height: 30px;')
+                div.team-activity!= activity.banner
 
 block more
   div.slack-to-action

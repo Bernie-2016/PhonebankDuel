@@ -137,13 +137,15 @@ var saveActivities = function(callback) {
           var callCount = parseInt(callReport['How many calls did you make?']);
           var assignment = callReport['What calling assignment?'];
           var team = callReport['Are you on a Mentor Team?'];
-          var teamRexp = team.match(/Team (.+?) \((.*)\)/i)
+          var teamRexp = team.match(/Team (.+?) \((.*)\)/i);
+          var isDuplicate = callReport['Duplicate'] == "TRUE";
           // console.log(team, teamRexp);
           var teamName = (!teamRexp || team == "[Blank]") ? null : teamRexp[1];
 
           if(!email || email == '' ) { callback(null); return; }
           if(!username || username == '' ) { callback(null); return; }
           if(!date ) { callback(null); return; }
+          if( isDuplicate ) { callback(null); return; }
 
 
           async.waterfall([
@@ -162,7 +164,7 @@ var saveActivities = function(callback) {
             },
             function(dataObj, callback) {
               //check team
-              console.log("1. GETTING Team");
+              // console.log("1. GETTING Team");
               if (dataObj.teamName) {
                 Team.findOne({ name: dataObj.teamName }, function(err, team) {
                   if (err) console.log(err);
@@ -174,7 +176,7 @@ var saveActivities = function(callback) {
             },
             function (obj, team, callback) {
               // save user
-              console.log("2. Finding User - ", obj.email);
+              // console.log("2. Finding User - ", obj.email);
 
               User.findOne({ email: obj.email }, function(err, user) {
 
@@ -233,7 +235,7 @@ var saveActivities = function(callback) {
               function(callCount, obj, team, user, callback) {
 
                 if ( callCount == 0 ) {
-                  console.log("3. SAVING CALL");
+                  // console.log("3. SAVING CALL");
                   var call = Call({
                               team: team ? team._id : null,
                               user: user._id,
@@ -245,7 +247,7 @@ var saveActivities = function(callback) {
                     callback(null, obj, team, user, false );
                   });
                 } else {
-                  console.log("3. Call exists ");
+                  // console.log("3. Call exists ");
                   callback(null, null, null, null, true);
                 }
               }
@@ -254,12 +256,12 @@ var saveActivities = function(callback) {
                 //Create Activity
                   // console.log(obj,team, user, skip);
                   if (skip) {
-                    console.log("4. Not saving. Skipping");
+                    // console.log("4. Not saving. Skipping");
                     if (callback) {
                       callback(null);
                     }
                   } else {
-                    console.log("4. Save Activity")
+                    // console.log("4. Save Activity")
                     var activity = Activity({
                       users_involved: [user._id],
                       teams_involved: (team ? [team._id] : []),
@@ -285,9 +287,9 @@ var saveActivities = function(callback) {
             ],
               function(err) {
                 if (err) {
-                  console.log("Error happened :: ", err);
+                  // console.log("Error happened :: ", err);
                 }
-                console.log("5. Everything is done! ");
+                // console.log("5. Everything is done! ");
                 callback(null);
               }
             ); // End of Waterfall

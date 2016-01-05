@@ -250,6 +250,18 @@ body#profile-layout {
       ul.activity-list {
         margin: 0;
 
+        &.team-activity-list {
+          li.activity-item.team-activity-item {
+            p.act-brand {
+              float: left;
+            }
+            div.team-activity {
+              margin-top: 5px;
+            }
+          }
+
+        }
+
         li.activity-item {
           list-style-type: none;
           padding: 10px;
