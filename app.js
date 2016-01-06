@@ -1,12 +1,5 @@
-var flash = require('express-flash'),
-    express = require('express');
-var expressSession = require('express-session');
-var sassMiddleware = require('node-sass-middleware');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var express = require('express');
+
 
 //Getting config variables
 var __MONGO_URL__ =
@@ -16,7 +9,6 @@ var __MONGO_URL__ =
 
 var __PORT__ = process.env.PORT || 5000;
 
-var __REDISTOGO_URL__ = process.env.REDISTOGO_URL || 'redis://localhost:6379';
 
 //Mongoose
 // getting-started.js
@@ -31,97 +23,12 @@ var User = require('./app/models/user');
 var routes = require('./app/routes/index')
   , admin = require('./app/routes/admin/index');
 
-var passport = require('passport')
-  , LocalStrategy = require('passport-local').Strategy;
 
 
 var app = express();
 
-//Setup sass middleware
-app.use(sassMiddleware({
-    /* Options */
-    src: path.join(__dirname, 'app/styles'),
-    dest: path.join(__dirname, 'public/stylesheets'),
-    debug: true,
-    outputStyle: 'compressed',
-    prefix:  '/stylesheets'  // Where prefix is at <link rel="stylesheets" href="prefix/style.css"/>
-}));
-
-// view engine setup
-app.set('views', path.join(__dirname, 'app/views'));
-app.set('view engine', 'jade');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use(cookieParser());
-app.use(flash());
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-/*
- * Configurations for `passport`
- */
-// app.use(expressSession({ secret: 'Bernie Sanders 2016' }));
-// var session = require('express-session');
-//Configuring redis session..
-var RedisStore = require('connect-redis')(expressSession);
-app.use(expressSession({
-    store: new RedisStore({ url: __REDISTOGO_URL__ }),
-    secret: 'keyboard cat',
-    resave: true,
-    saveUninitialized: true
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-/**
- * setup Strategies for Passport
- */
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(userId, done) {
-  console.log("DESERIALIZING ::: ", userId);
-  User.findById(userId, function(err, user) {
-    done(err, user);
-  });
-});
-
-passport.use(new LocalStrategy({
-    usernameField: 'email',
-    passwordField: 'password'
-  },
-  function(email, password, done) {
-    console.log("Entering LocalStrategy %s -- %s", email, password);
-    User.findOne({ email: email })
-      // .populate('team')
-      .exec(function(err,user) {
-
-      console.log("USER :: ", user);
-      if (err) { return done(err); }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-
-      user.validPassword(password, function(err, isMatch) {
-        console.log(err, isMatch);
-        if ( !isMatch ) {
-          return done(null, false, { message: 'Incorrect password.' });
-        } else {
-          return done(null, user);
-        }
-      });
-
-    });
-  }
-));
+require('./lib/config/express')(app);
+require('./lib/config/redis')(app);
 
 /*
  * Route definitions
@@ -140,14 +47,7 @@ app.get('*',function(req,res, next) {
 });
 
 //Create session and then redirect
-app.post('/login', passport.authenticate('local', { successRedirect: '/',
-                                   failureRedirect: '/user/login',
-                                   failureFlash: true })
-);
-app.get('/logout', function(req, res, next) {
-  req.logout();
-  res.redirect('/');
-});
+
 
 app.use('/', routes);
 app.use('/admin', admin);
