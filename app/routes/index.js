@@ -8,6 +8,7 @@ var commandCenter = require('./commandcenter');
 var rankPage = require('./rank');
 var callServices = require('./call');
 
+
 var User = require('../models/user');
 var Team = require('../models/team');
 
@@ -40,6 +41,9 @@ router.get("/j/:team_id?", function(req, res, next) {
     next('route');
   }
 });
+
+// Add Session Routes
+require('./sessions')(router);
 
 // Defining Routes
 router.use('/user', userPage);
