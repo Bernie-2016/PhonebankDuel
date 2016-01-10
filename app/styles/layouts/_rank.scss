@@ -1,29 +1,102 @@
 body#rank-layout {
   .content {
-    & > div.clearfix > section#left-col,
+    & > div.clearfix > section#left-col {
+      float: left;
+      @include calc(width, "25% - 20px");
+      position: relative;
+      min-height: 100px;
+      text-align: right;
+      padding-top: 50px;
+      h5 {
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: gray;
+      }
+
+      ul {
+        margin-top: 10px;
+        margin-bottom: 30px;
+        li {
+          margin-right: -16px;
+          a {
+            padding: 5px 16px 5px 5px;
+            display: inline-block;
+          }
+
+          &[selected='true'] {
+            a {
+              color: white;
+              background: $darkblue;
+              @include ribbonFlap(13px, $darkblue);
+            }
+          }
+        }
+      }
+
+    }
+
     & > div.clearfix > section#right-col {
       float: left;
 
       position:relative;
-      @include calc(width, "50% - 20px");
+      @include calc(width, "75% - 20px");
       // @include calc(width, "49% - 20px");
       // padding: 10px;
       // width; 49%;
 
       .stats-chart {
         width: 100%;
-        height: 570px;
+        // height: 570px;
         background-color: whitesmoke;
         border: 1px solid lightgray;
 
+        .timeline-menu {
+          padding: 15px;
+          ul li {
+            padding: 5px 8px;
+            border-radius: 4px;
+
+            &[selected=true] {
+              background-color: $darkblue;
+              a { color: white;
+              font-weight: 600;
+               }
+            }
+          }
+        }
+
         .participants {
           float: left;
-          @include calc(height, "100% - 50px");
-          width: 200px;
-          margin-top: 50px;
+          // @include calc(height, "100% - 50px");
+          width: 100%;
+          // margin-top: 50px;
+
+          .empty-message {
+            padding: 0 40px;
+            font-family: 'Merriweather', serif;
+            font-size: 49px;
+            line-height: 1.5;
+
+          }
 
           ul li.rank-item {
             margin: 14px 0 14px;
+            &:first-child {
+              .bar-area {
+                .name-area {
+                  h5 { a {font-weight: 600 !important; } }
+                }
+                .bar {
+                  background-image: url('/images/feelthebern.jpg');
+                  background-repeat: repeat-x;
+                  background-size: 300px;
+                  h3 {
+                    color: #D71414;
+                  }
+                }
+              }
+            }
 
             .rank {
               width: 34px;
@@ -32,7 +105,7 @@ body#rank-layout {
               display: inline-block;
               font-size: 28px;
               padding: 0px 11px 3px;
-              font-weight: 800;
+              font-weight: 400;
               vertical-align: top;
             }
             .photo {
@@ -43,20 +116,33 @@ body#rank-layout {
               vertical-align: top;
               margin-right: 3px;
             }
-            .name {
-              display: inline-block;
-              vertical-align: top;
-
-              h3 {font-weight: 600; }
-              h5 a {
-                width: 105px;
-                overflow: hidden;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                display: inline-block;
+            .bar-area {
+              @include calc(width, '100% - 200px');
+              .bar {
+                min-width: 180px;
+                background-color: $bernieblue;
+                height: 40px;
+                position: relative;
+                h3 { font-weight: 800; font-size: 24px; color: $darkblue; position: absolute; top: 4px; padding-left: 5px; text-transform: uppercase;}
+                h3.subhead {
+                  left: 100%;
+                  font-size: 9px;
+                  width: 100px;
+                  top: 30px;
+                }
+                .name-area {
+                    h5 a {
+                      font-weight: 100;
+                      display: inline-block;
+                      vertical-align: top;
+                      color: white;
+                      width: 170px;
+                      padding: 2px;
+                      display: inline-block;
+                    }
+                }
               }
-            }
+            } // end of bar-area
           }
         }
 
@@ -87,7 +173,7 @@ body#rank-layout {
       }
     }
     section#left-col {
-      margin-right: 15px;
+
     }
     section#right-col {
       margin-left: 15px;

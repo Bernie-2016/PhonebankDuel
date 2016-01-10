@@ -1,100 +1,135 @@
 extends ../layout/two-col
 
 block left_content
-  div.flag-container
-    div.flag.ribbon.ribbon-right Weekly Team Ranking
+  //- div.flag-container
+  //-   div.flag.ribbon.ribbon-right Weekly Team Ranking
   div#team-weekly-chart.stats-chart.clearfix
-    div.weekly-participants.participants
-      ul
-        - for( var i = 0; i < weeklyRanking.length; i ++) {
-          - var rank = weeklyRanking[i];
-          - if ( !rank.count )  continue;
+    h5 Team Ranking
+    ul
+      li(selected= type=="team" && !league ? 'true' : 'false')
+        a(href='/rank/team/' + timeline) All Teams
+      li(selected= type=="team" && league=="Reddit League" ? 'true' : 'false')
+        a(href='/rank/team/' + timeline + '?l=Reddit League') Reddit League
+      li(selected= type=="team" && league=="College League" ? 'true' : 'false')
+        a(href='/rank/team/' + timeline + '?l=College League') College League
 
-            li.rank-item
-              div.rank= i+1
-              div.photo(style= "background-image: url(" + rank._id.team.logo + ")")
-              div.name
-                h5
-                  a(href= "/team/" + rank._id.team.name)= rank._id.team.name
-                h3= rank.count
-        - };
-    div#weekly-chart.actual-chart
+    h5 Caller Ranking
+    ul
+      li
+        a(href='/rank/caller/' + timeline) All Callers
+      //- li
+      //-   a(href='/rank/caller/' + timeline + '?l=Reddit League') Reddit League
+      //- li
+      //-   a(href='/rank/caller/' + timeline + '?l=College League') College League
+
+  //-   div.weekly-participants.participants
+  //-     ul
+  //-       - for( var i = 0; i < weeklyRanking.length; i ++) {
+  //-         - var rank = weeklyRanking[i];
+  //-         - if ( !rank.count )  continue;
+
+  //-           li.rank-item
+  //-             div.rank= i+1
+  //-             div.photo(style= "background-image: url(" + rank._id.team.logo + ")")
+  //-             div.name
+  //-               h5
+  //-                 a(href= "/team/" + rank._id.team.name)= rank._id.team.name
+  //-               h3= rank.count
+  //-       - };
+  //-   div#weekly-chart.actual-chart
 
 block right_content
-  div.flag-container
-    div.flag.ribbon.ribbon-right Overall Team Ranking
-  div#team-overall-chart.stats-chart
-    div.overall-participants.participants
+  //- div.flag-container
+  //-   div.flag.ribbon.ribbon-right Overall Team Ranking
+  div#team-overall-chart.stats-chart.clearfix
+    div.timeline-menu.clearfix
       ul
-        - for( var i = 0; i < overallRanking.length; i ++) {
-          - var rank = overallRanking[i];
-          - if ( !rank.count )  continue;
-            li.rank-item
-              div.rank= i+1
-              div.photo(style= "background-image: url(" + rank._id.team.logo + ")")
-              div.name
-                h5
-                  a(href= "/team/" + rank._id.team.name)= rank._id.team.name
-                h3= rank.count
-        - };
+        li.push-left(selected= timeline == 'daily' ? 'true' : 'false')
+          a(href=(league ? '/rank/team/daily?l=' +league : '/rank/team/daily') ) Today
+        li.push-left(selected= timeline == 'weekly' ? 'true' : 'false')
+          a(href=(league ? '/rank/team/weekly?l=' +league : '/rank/team/weekly')) This Week
+        li.push-left(selected= (timeline == 'monthly' ? 'true' : 'false'))
+          a(href=(league ? '/rank/team/monthly?l=' +league : '/rank/team/monthly')) This Month
+        li.push-left(selected= timeline == 'overall' ? 'true' : 'false')
+          a(href=(league ? '/rank/team/overall?l=' +league : '/rank/team/overall')) Overall
+    div.overall-participants.participants
+
+      if ranking.length > 0
+        ul
+          - for( var i = 0; i < ranking.length; i ++) {
+            - var rank = ranking[i];
+            - if ( !rank.count )  continue;
+              li.rank-item.clearfix
+                div.push-left.rank.number= i+1
+                div.push-left.photo(style= "background-image: url(" + rank._id.team.logo + ")")
+                div.push-left.bar-area
+                  div.bar(style= "width: #{rank.count/max * 430 + 170}px")
+                    div.name-area
+                      h5
+                        a(href= "/team/" + rank._id.team.name)= rank._id.team.name
+                    h3.number(style= "left: 100%")= rank.countText
+                    h3.subhead(style= "left: 100%") Calls & texts
+          - };
+      else
+        div.empty-message No calls logged at this time. Make the first call <a href='http://organize.berniesanders.com/' target='_blank'>Now</a>
 
 
     div#overall-chart.actual-chart
 
-block script_content
-  script(type='text/javascript').
-    window.overallData= !{JSON.stringify(overallRanking)};
-    window.weeklyData= !{JSON.stringify(weeklyRanking)};
+//- block script_content
+//-   script(type='text/javascript').
+//-     window.overallData= !{JSON.stringify(overallRanking)};
+//-     window.weeklyData= !{JSON.stringify(weeklyRanking)};
 
-  script(type='text/javascript').
-    window.pageFactory = (function(){
-      //Generate bar chart for weekly
-      c3.generate({
-        bindto: "#weekly-chart",
-        data: {
-          columns: [
-            ['Calls Made'].concat(window.weeklyData.map(function(item){ return item.count; }))
-          ],
-          type: 'bar'
-        },
-        axis: {
-          rotated: true,
-          x: {
-            type: 'category',
-            categories: window.weeklyData.map(function(item){ return item._id.team.name; }),
-            show: false
-          },
-          y: {
-            show: false
-          }
-        },
-        legend: {
-          show: false
-        }
-      });
+//-   script(type='text/javascript').
+//-     window.pageFactory = (function(){
+//-       //Generate bar chart for weekly
+//-       c3.generate({
+//-         bindto: "#weekly-chart",
+//-         data: {
+//-           columns: [
+//-             ['Calls Made'].concat(window.weeklyData.map(function(item){ return item.count; }))
+//-           ],
+//-           type: 'bar'
+//-         },
+//-         axis: {
+//-           rotated: true,
+//-           x: {
+//-             type: 'category',
+//-             categories: window.weeklyData.map(function(item){ return item._id.team.name; }),
+//-             show: false
+//-           },
+//-           y: {
+//-             show: false
+//-           }
+//-         },
+//-         legend: {
+//-           show: false
+//-         }
+//-       });
 
-      // GEnerate bar for overall
-      c3.generate({
-        bindto: "#overall-chart",
-        data: {
-          columns: [
-            ['Calls Made'].concat(window.overallData.map(function(item){ return item.count; }))
-          ],
-          type: 'bar'
-        },
-        axis: {
-          rotated: true,
-          x: {
-            type: 'category',
-            categories: window.overallData.map(function(item){ return item._id.team.name; }),
-            show: false
-          },
-          y: {
-            show: false
-          }
-        },
-        legend: {
-          show: false
-        }
-      });
-    })();
+//-       // GEnerate bar for overall
+//-       c3.generate({
+//-         bindto: "#overall-chart",
+//-         data: {
+//-           columns: [
+//-             ['Calls Made'].concat(window.overallData.map(function(item){ return item.count; }))
+//-           ],
+//-           type: 'bar'
+//-         },
+//-         axis: {
+//-           rotated: true,
+//-           x: {
+//-             type: 'category',
+//-             categories: window.overallData.map(function(item){ return item._id.team.name; }),
+//-             show: false
+//-           },
+//-           y: {
+//-             show: false
+//-           }
+//-         },
+//-         legend: {
+//-           show: false
+//-         }
+//-       });
+//-     })();

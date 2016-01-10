@@ -5,9 +5,17 @@ block profile
     div.profile-img
       img(src= team.logo)
     div.profile-name-status
+      if team.league
+        div.info.league
+          h5
+            a(href='/rank/team?l=' + team.league)= team.league
       h1 Team #{team.name} (#{members.length == 1 ? members.length + " Member" : members.length + " Members"})
-      h3 Mentor:&nbsp;
-        a(href= "/user/" + team.mentor.username)= team.mentor.username
+      div.info.mentor
+        h3 Mentored by
+        a(href= "/user/" + team.mentor.username)
+          img(width= "20px" height="20px" src=team.mentor.photo)
+          span= team.mentor.username
+
       div.call-counters.clearfix
         div.call-count
           .hero= calls.monthlyCount

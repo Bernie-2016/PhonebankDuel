@@ -24,29 +24,58 @@ var callSchema = new Schema({
 
 // THIS WILL ALL GO TO GRUNT! :)
 //REDIS EVERY HOUR
-callSchema.statics.getTopTeamThisWeek = function(callback) {
+callSchema.statics.getTopTeams = function(timeline, teams, callback) {
+  console.log("Getting top teams");
+
+  var conditions = {};
+  var startTime = 'day';
+  // Calls should have teams in it:
+  conditions.team = { $ne: null };
+
+  // Get timeline
+  switch (timeline) {
+    case 'daily': startTime = 'day'; break;
+    case 'weekly': startTime = 'week'; break;
+    case 'monthly': startTime = 'month'; break;
+    case 'overall': startTime = null; break;
+  }
+  // console.log(moment.startOf(startTime));
+
+  if ( startTime != null ) {
+    conditions.call_time = {$gt: moment().startOf(startTime)._d };
+  }
+
+  if ( teams ) {
+    conditions.team = { $in: teams.map(function(t) { return t._id; }) };
+  }
+
+  console.log(conditions);
+
+  // Get league
+  // if (league != null) {
+  //   conditions
+  // }
+
+
   this.aggregate(
       [
-      {$match: {
-          call_time: { $gt: moment().startOf('week')._d },
-          team: { $ne: null }
-        },
-      },
+      {$match: conditions },
       {
         $group: {
           _id: {
             team: "$team",
           },
-          count: { $sum: "$count" },
-          texts: { $sum: "$texts" },
+          count: { $sum: { $add: ["$count", "$texts"]} },
+          // texts: { $sum: "$texts" },
         }
       }
       // { $project: { user: 1, _id: 0 }}
       ])
     .sort({ 'count' : -1 })
-    .limit(10)
+    .limit(50)
     .exec(function(err, calls) {
       //arrange data as such;
+      // console.log("Call count ::: ", calls);
       if (err) callback(err);
       if (!calls) {
         callback(null, false);
@@ -61,27 +90,46 @@ callSchema.statics.getTopTeamThisWeek = function(callback) {
 };
 
 
-callSchema.statics.getTopUserThisWeek = function(callback) {
+callSchema.statics.getTopUsers = function(timeline, callback) {
+
+  var conditions = {};
+  var startTime = 'day';
+  // Calls should have teams in it:
+    conditions.user = { $ne: null };
+
+  // Get timeline
+  switch (timeline) {
+    case 'daily': startTime = 'day'; break;
+    case 'weekly': startTime = 'week'; break;
+    case 'monthly': startTime = 'month'; break;
+    case 'overall': startTime = null; break;
+  }
+  // console.log(moment.startOf(startTime));
+
+  if ( startTime != null ) {
+    conditions.call_time = {$gt: moment().startOf(startTime)._d };
+  }
+
   this.aggregate(
       [
-      {$match: {
-          call_time: { $gt: moment().startOf('week')._d },
-          user: { $ne: null }
-        }
-      },
+      {$match: conditions},
       {
         $group: {
           _id: {
             user: "$user",
           },
-          count: { $sum: "$count" },
-          texts: { $sum: "$texts" },
+          count: { $sum: { $add: ["$count", "$texts"]} },
+        }
+      },
+      {
+        $match: {
+          count: { $gt: 0},
         }
       }
       // { $project: { user: 1, _id: 0 }}
       ])
     .sort({ 'count' : -1 })
-    .limit(10)
+    .limit(500)
     .exec(function(err, calls) {
       //arrange data as such;
       // console.log(calls, Team);
@@ -98,82 +146,6 @@ callSchema.statics.getTopUserThisWeek = function(callback) {
       }
     });
 };
-
-//REDIS EVERY HOUR TOO
-callSchema.statics.getTopTeamOverall = function(callback) {
-  this.aggregate(
-      [
-      { $match: {
-          team: { $ne: null }
-        }
-      },
-      {
-        $group: {
-          _id: {
-            team: "$team",
-          },
-          count: { $sum: "$count" },
-          texts: { $sum: "$texts" },
-        }
-      }
-      // { $project: { user: 1, _id: 0 }}
-      ])
-    .sort({ 'count' : -1 })
-    .limit(10)
-    .exec(function(err, calls) {
-      //arrange data as such;
-      if (err) callback(err);
-      if (!calls) {
-        callback(null, false);
-      } else {
-        Team.populate(calls, {path: "_id.team", select: "name logo"}, function(err, res) {
-
-          //format score
-          // res.forEach(function(c){ c.count = numeral(c.count).format("0.0a"); });
-          callback(null, res)
-        });
-      }
-    });
-}
-
-
-/**
- *  Top User OVERALL
- */
-callSchema.statics.getTopUserOverall = function(callback) {
-  this.aggregate(
-      [
-      { $match: {
-          user: { $ne: null }
-        }
-      },
-      {
-        $group: {
-          _id: {
-            user: "$user",
-          },
-          count: { $sum: "$count" },
-          texts: { $sum: "$texts" },
-        }
-      }
-      // { $project: { user: 1, _id: 0 }}
-      ])
-    .sort({ 'count' : -1 })
-    .limit(10)
-    .exec(function(err, calls) {
-      //arrange data as such;
-      if (err) callback(err);
-      if (!calls) {
-        callback(null, false);
-      } else {
-        User.populate(calls, {path: "_id.user", select: "username photo"}, function(err, res) {
-          // res.forEach(function(c){ c.count = numeral(c.count).format("0.0a"); });
-          callback(null, res)
-        });
-      }
-    });
-};
-
 
 callSchema.statics.getCallsThisWeek = function(target, callback) {
   var match = {};

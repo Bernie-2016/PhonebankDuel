@@ -48,6 +48,91 @@ var _getTeam = function(req, res, next) {
     }; // Sets req._team to the team
 
 module.exports = {
+  s3 : new Upload('www.phonebankduel.com', {
+                aws: {
+                  path: 'team/',
+                  region: 'us-east-1',
+                  acl: 'public-read'
+                },
+                cleanup: {
+                  versions: true,
+                  original: false
+                },
+                original: {
+                  awsImageAcl: 'private'
+                },
+                versions: [{
+                  maxHeight: 100,
+                  aspect: '1:1',
+                  format: 'png',
+                  suffix: '-thumb1'
+                }]
+              }),
+  // Callback sequence to Create a team
+  create: [
+    // 1 ] Upload the team photo
+    function(req, res, next) {
+      //store image
+      if (!req.user) { res.redirect('/user/login'); }
+      if (req.file) {
+        if ( ["image/png", "image/jpg", "image/jpeg", "image/gif"].indexOf(req.file.mimetype) < 0) {
+          req.flash('error', 'Wrong filesize. Please use an image.');
+          res.redirect('/user/edit/photo');
+        } else {
+            s3TeamClient.upload(req.file.path, {}, function(err, versions, meta) {
+              if (err) { throw err; }
+
+              req.photo = versions[0].url;
+                next();
+            });
+        }
+      } else {
+        next();
+      }
+    },
+    // 2]  Save the team
+    function(req, res, next) {
+      //Save team name and fundraising link...
+      if (!req.user) { res.redirect('/user/login'); }
+      var photo = req.photo;
+      var name = req.body.team.name;
+      var description = req.body.team.description;
+      var fundraising_link = req.body.team.fundraising_link;
+      var league = req.body.team.league
+      var user = req.user;
+
+      var team = Team({ name: name, mentor: user._id, league: league, fundraising_link: fundraising_link, logo: photo, description: description});
+
+      team.save(function(err, team) {
+
+        if (err) {
+          req.flash('error', err.message);
+          res.redirect('/team/create');
+        }
+
+        // console.log("Newly saved team:: ", team);
+        req.team = team;
+
+        next();
+      });
+    },
+    // 3] Set the team to the user's session
+    // And then redirect to team
+    function(req, res, next) {
+      // Save team for the user
+      req.user.team = req.team._id;
+      req.user.save(function(err) {
+        if (err) {
+          req.flash('error', err.message);
+          res.redirect('/team/create');
+        }
+
+        res.redirect('/team/' + req.team.name);
+      })
+    }
+  ], // End of Create team.
+
+  // Callback sequence to Join Team
   joinTeam: [
 
     function(req, res, next) {
@@ -181,11 +266,9 @@ module.exports = {
       var user = req.user;
       var _team = req._team;
 
-      var name = req.body.team.name;
-      var description = req.body.team.description;
-
-      _team.name = name;
-      _team.description = description;
+      _team.name = req.body.team.name;
+      _team.description = req.body.team.description;
+      _team.league = req.body.team.league;
 
       _team.save(function(err) {
         if (err) {

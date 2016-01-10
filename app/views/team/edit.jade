@@ -61,6 +61,19 @@ block activities
                   sub 200 characters
                 td
                   textarea(name='team[description]', value= team.description)= team.description
+              tr#team-league
+                td
+                  label League
+                  sub Choose the league your team will participate on
+                td
+                  select(name='team[league]')
+                    option(value='') No League
+                    each league in leagues
+                      if team.league === league
+                        option(value= league,
+                           selected="selected")= league
+                      else
+                        option(value= league)= league
               tr.submit
                 td &nbsp;
                 td

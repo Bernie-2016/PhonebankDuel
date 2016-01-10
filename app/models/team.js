@@ -13,6 +13,7 @@ var teamSchema = new Schema({
   mentor: {type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true},
   members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   logo: {type: String, default: '/images/profile.jpg'},
+  league: {type: String},
 
   created_at: {type: Date, default: new Date()},
 
@@ -40,6 +41,8 @@ teamSchema.virtual('abbrev.calls_made').get(function() {
   }
 });
 
+
+// Get weekly ranking
 teamSchema.virtual('weekly_ranking').get(function() {
   var currentWeek = moment().format("GGGG WW");
   // var target = this.ranking.weekly.filter(function(w) { return w.week == currentWeek; });
@@ -53,6 +56,7 @@ teamSchema.virtual('weekly_ranking').get(function() {
   // return target.rank;
 });
 
+// Get overall ranking
 teamSchema.virtual('overall_ranking').get(function() {
   var rank =  numeral(this.ranking.overall).format("0o");
   return rank.substring(0, rank.length - 2) + "<sup>" + rank.substring(rank.length-2) + "</sup>";
@@ -141,5 +145,7 @@ teamSchema.methods.getCallsThisMonth = function(callback) {
 
 //call to build mentors
 var Team = mongoose.model('Team', teamSchema);
+
+Team.LEAGUES = ['Reddit League', 'College League', 'Other'];
 
 module.exports = Team;

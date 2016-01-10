@@ -8,27 +8,8 @@ var Team = require('../models/team'),
 var Upload = require('s3-uploader');
 var multer  = require('multer');
 var uploader = multer({ dest: '/tmp' });
-var TeamServices = require('./services/team-services.js');
-var s3TeamClient = new Upload('www.phonebankduel.com', {
-                aws: {
-                  path: 'team/',
-                  region: 'us-east-1',
-                  acl: 'public-read'
-                },
-                cleanup: {
-                  versions: true,
-                  original: false
-                },
-                original: {
-                  awsImageAcl: 'private'
-                },
-                versions: [{
-                  maxHeight: 100,
-                  aspect: '1:1',
-                  format: 'png',
-                  suffix: '-thumb1'
-                }]
-              });
+var TeamServices = require('./services/team.js');
+var s3TeamClient = TeamServices.s3;
 
 // Start of Index
 router.get('/', function(req, res, next) {
@@ -54,7 +35,8 @@ router.get('/join', function(req,res,next) {
   var page = req.query.p || 0;
 
   Team.find({})
-    .limit(20).skip(page*20)
+    .populate('mentor')
+    .limit(100).skip(page*100)
     .exec(function(err, teams) {
       if (err) throw err;
       res.render('team/list', {layout: 'settings', teams: teams, user: req.user, currentPage: req.url });
@@ -75,74 +57,15 @@ router.get('/create', function(req, res, next) {
       if (team) { // he is leading a team
         res.redirect('/team/edit');
       } else {
-        res.render('team/create', { layout: "settings", currentPage: req.url });
+        res.render('team/create', { layout: "settings", currentPage: req.url, leagues: Team.LEAGUES});
       }
     });
   } else {
     res.redirect('/user/login');
   }
-})
-.post('/create', uploader.single('photo'), function(req, res, next) {
-    //store image
-    if (!req.user) { res.redirect('/user/login'); }
-    if (req.file) {
-      if ( ["image/png", "image/jpg", "image/jpeg", "image/gif"].indexOf(req.file.mimetype) < 0) {
-        req.flash('error', 'Wrong filesize. Please use an image.');
-        res.redirect('/user/edit/photo');
-      } else {
-          s3TeamClient.upload(req.file.path, {}, function(err, versions, meta) {
-            if (err) { throw err; }
-
-            req.photo = versions[0].url;
-            // req.user.save(function(err) {
-              // if (err) throw err;
-
-              next();
-              // req.flash('info', 'Photo Updated successfully.');
-              // res.redirect('/user/edit/photo');
-            // });
-          });
-      }
-    } else {
-      next();
-    }
-})
-.post('/create', function(req, res, next) {
-  //Save team name and fundraising link...
-  if (!req.user) { res.redirect('/user/login'); }
-  var photo = req.photo;
-  var name = req.body.team.name;
-  var description = req.body.team.description;
-  var fundraising_link = req.body.team.fundraising_link;
-  var user = req.user;
-
-  var team = Team({ name: name, mentor: user._id, fundraising_link: fundraising_link, logo: photo, description: description});
-
-  team.save(function(err, team) {
-
-    if (err) {
-      req.flash('error', err.message);
-      res.redirect('/team/create');
-    }
-
-    // console.log("Newly saved team:: ", team);
-    req.team = team;
-
-    next();
-  });
-})
-.post('/create', function(req, res, next) {
-  // Save team for the user
-  req.user.team = req.team._id;
-  req.user.save(function(err) {
-    if (err) {
-      req.flash('error', err.message);
-      res.redirect('/team/create');
-    }
-
-    res.redirect('/team/' + req.team.name);
-  })
 });
+
+router.post('/create', uploader.single('photo'), TeamServices.create);
 
 router.get(/edit(\/:type)?/, function(req, res, next) {
   // Check if user leads a team. If so, view team, otherwise,
@@ -161,7 +84,7 @@ router.get(/edit(\/:type)?/, function(req, res, next) {
             res.render('team/edit', { mentor: true, user: user, team: team, members: members, layout: "settings", currentPage: req.url});
           });
         } else {
-          res.render('team/edit', { mentor: true, currentPage: req.url, user: user, team: team, layout: "settings"});
+          res.render('team/edit', { mentor: true, currentPage: req.url, user: user, team: team, layout: "settings", leagues: Team.LEAGUES});
         }
       } else if (user.team) {
         Team.findOne({ _id: user.team }, function(err, team) {

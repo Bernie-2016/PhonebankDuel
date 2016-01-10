@@ -39,6 +39,15 @@ block activities
             //- div.photo-area(style='background-image: url(/images/profile.jpg)')
             //-   img.photo-icon(src= "/images/camera.png", width='100px', height='100px', onclick)
             input(type='file', name='photo', style='margin-left: 20px; margin-top: 4px;')
+        tr#team-league
+          td
+            label Team league
+            sub Choose the league your team will participate on
+          td
+            select(name='team[league]')
+              option(value='') No League
+              each league in leagues
+                option(value= league)= league
         tr
           td(colspan=2) &nbsp;
         tr

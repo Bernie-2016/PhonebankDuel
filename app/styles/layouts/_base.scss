@@ -3,6 +3,13 @@ html,body {
   height: 100%;
   text-align: center;
   font-family: 'Lato', sans-serif;
+  color: #333333;
+
+  .number {
+    font-family: 'Merriweather', serif;
+  }
+
+  .push-left { float: left; }
 
   pre {
     text-align: left;
@@ -28,10 +35,24 @@ html,body {
           & + sub {
             float: right;
             color: gray;
+            max-width: 150px;
+            text-align: right;
 
             &.over-limit, &.error { color: red; }
           }
         }
+
+        /* General styling for select*/
+        select {
+          margin-left: 20px;
+          font-size: 32px;
+          height: 32px;
+          option {
+            font-size: 32px;
+          }
+        }
+        // end of gen style
+
         input[type=text],input[type=password], input[type=number], textarea {
 
           margin-left: 20px;
