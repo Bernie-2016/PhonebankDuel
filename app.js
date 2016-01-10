@@ -25,7 +25,7 @@ var routes = require('./app/routes/index')
 var app = express();
 
 require('./lib/config/express')(app);
-require('./lib/config/redis')(app);
+// require('./lib/config/redis')(app);
 
 /*
  * Route definitions
