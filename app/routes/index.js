@@ -15,6 +15,7 @@ var Team = require('../models/team');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   // If the user has not logged in
+  console.log("RAPI ::::: ", req.user);
   if ( !req.user ) {
     res.render('user/login');
   } else {

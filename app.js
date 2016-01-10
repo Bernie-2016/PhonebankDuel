@@ -16,9 +16,6 @@ var mongoose = require('mongoose');
 mongoose.connect(__MONGO_URL__);
 mongoose.set('debug', true);
 
-//User model
-var User = require('./app/models/user');
-
 //Routes
 var routes = require('./app/routes/index')
   , admin = require('./app/routes/admin/index');
@@ -34,6 +31,7 @@ require('./lib/config/redis')(app);
  * Route definitions
  */
 app.get('*',function(req,res, next) {
+
   res.locals.loggedIn = (req.user) ? true : false;
   if (req.user) {
     res.locals._user = {

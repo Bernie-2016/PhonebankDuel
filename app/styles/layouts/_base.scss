@@ -4,6 +4,13 @@ html,body {
   text-align: center;
   font-family: 'Lato', sans-serif;
 
+  pre {
+    text-align: left;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 20px;
+    line-height: 1.5;
+  }
 
   //Start of form-tables
   table.form-table {
