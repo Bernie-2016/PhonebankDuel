@@ -22,16 +22,17 @@ block activities
     ul#list-of-team
       each team in teams
         li.team-to-join.clearfix
-          img.team-logo(src= team.logo, width="70px", height="70px")
+          a(href= '/team/' + team.name)
+            img.team-logo(src= team.logo, width="70px", height="70px")
           div.team-info
             h3
               a(href= '/team/' + team.name)= team.name
             p= team.description
-            if !team || !team._id.equals(user.team)
+            if !team || (user && !team._id.equals(user.team))
               form(class='join-team', action='/team/join', method='POST')
                 input(type='hidden', name='team[_id]', value= team._id)
                 button.blue-button Join
-            else if team._id.equals(user.team)
+            else if user && team._id.equals(user.team)
               form(class='join-team', action='/team/leave', method='POST')
                 input(type='hidden', name='team[_id]', value= team._id)
                 button.blue-button Leave
