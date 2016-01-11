@@ -41,7 +41,9 @@ router.route('/login')
     //render page for Login
 
     //Render login page
-    res.render('user/login');
+    // Report in Allows the user to automatically popup the report tool
+    var report_in = (req.query.report_in ? req.query.report_in == 'true' : false);
+    res.render('user/login', { report_in: report_in });
   });
 //End of login
 
@@ -49,9 +51,13 @@ router.route('/login')
   *
   * START of registration
   */
-router.get("/register/:team_id?", function(req,res,next) {
+router.get("/register(/:team_id)?", function(req,res,next) {
     // Check if user is already logged in first!
     //Render registration page here
+
+    // Report in allows the dialog box to appear for Report-in
+    var report_in = (req.query.report_in ? req.query.report_in == 'true' : false);
+
     if ( req.user ) {
       res.redirect('/');
     } else {
@@ -60,11 +66,11 @@ router.get("/register/:team_id?", function(req,res,next) {
       if (team_id) {
         Team.findOne({short_id: team_id}, function(err, team) {
           if (err) throw err;
-          res.render('user/register', { team: team });
+          res.render('user/register', { team: team, report_in: report_in });
         })
       } else {
         // If there's no session, go to registration page
-        res.render('user/register');
+        res.render('user/register', {report_in: report_in});
       }
     }
   });
@@ -148,9 +154,13 @@ router.post('/register', function(req,res,next) {
     var user = req.user;
 
     var registrationCode = user.createRegistrationCode();
-    console.log(registrationCode);
     req.flash("info", "Registration Successful! Please login.");
-    res.redirect('/');
+    if ( req.body.report_in ) {
+      res.redirect('/?report_in=true');
+    } else {
+      res.redirect('/');
+    }
+
 
   });
 //end of registration
@@ -289,6 +299,9 @@ router.get('/u/:id', function(req, res, next) {
 });
 //Start of user page
 router.get('/:username', function(req,res,next) {
+
+  console.log(":::::::::::: RAPI :::::::::", req.body);
+
         // 1 - retrieve user
         User
           .findOne({ username: req.params.username })
@@ -349,14 +362,25 @@ router.get('/:username', function(req,res,next) {
       })
       .get('/:username', function(req, res, next) {
         // 4 - Render user page
-        console.log(req.activities);
+        //Check if user opted to report in from the outside
+
+
+        // Report in allows the popup to automatically appear when the user clicks it
+        var report_in = false;
+        if(req.query.report_in) {
+          report_in = (req.query.report_in ? req.query.report_in == 'true' : false);
+        } else if (req.body && req.body.report_in) {
+          report_in = req.body.report_in;
+        }
+
         res.render('user',
           {
             layout: "profile-layout",
             user: req._user,
             loggedIn: req.user,
             activities: req.activities,
-            calls: req.calls
+            calls: req.calls,
+            report_in: report_in
           }
         );
 

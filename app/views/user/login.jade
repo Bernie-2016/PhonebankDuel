@@ -6,8 +6,10 @@ block hero_content
     h2.spiel
       span.action Login
       &nbsp;or&nbsp;
-      a(href='/user/register', style='font-weight: 300') Register
+      a(href='/user/register#{report_in ? "?report_in=true" : ""}', style='font-weight: 300') Register
     form.form-proper(method="POST", action="/login")
+      if(report_in)
+        input(type='hidden', name='report_in', value='true')
       table
         tr.email-area
           td

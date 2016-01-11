@@ -20,6 +20,8 @@ block hero_content
 
 
     form.form-proper(method="POST",action='/user/register')
+      if(report_in)
+        input(type='hidden', name='report_in', value='true')
       if team
         input(type='hidden', name='user[team]', value=team._id)
       table
